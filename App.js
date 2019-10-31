@@ -1,19 +1,25 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { ThemeProvider, Button } from "react-native-elements";
+import SortContainer from "./components/SortContainer";
+
+const theme = {
+  colors: {
+    primary: "#76323F",
+    secondary: "#C09F80"
+  },
+  Button: {
+    raised: false,
+    backgroundColor: "blue"
+  }
+};
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
+    <ThemeProvider theme={theme}>
+      <View>
+        <SortContainer />
+      </View>
+    </ThemeProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
-  }
-});

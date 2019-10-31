@@ -38,10 +38,17 @@ function SortOverlay(props) {
   };
 
   return (
-    <Overlay isVisible={props.isOpen}>
+    <Overlay
+      isVisible={props.isOpen}
+      onBackdropPress={() => {
+        props.setOpen(false);
+      }}
+      height="auto"
+    >
       <View>
-        <Text>Sortér på:</Text>
+        <Text style={{ fontSize: 25, margin: 15 }}>Sortér på:</Text>
         <FlatList
+          style={{ marginLeft: 25 }}
           data={sortList}
           renderItem={({ item }) => (
             <ListItem

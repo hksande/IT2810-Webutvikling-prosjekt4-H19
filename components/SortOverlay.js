@@ -1,6 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import { Overlay, Text, ListItem } from "react-native-elements";
 import { View, FlatList } from "react-native";
+import { connect } from "react-redux";
+import { setSort } from "../actions/index";
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setSort: sort => {
+      dispatch(setSort({ sort }));
+      //dispatch(setPage({ change: 0 }));
+    }
+  };
+}
+
+function mapStateToProps(state) {
+  return {
+    sort: state.filter.sort
+  };
+}
 
 const sortList = [
   { frontend: "Siste nytt", backend: null },
@@ -10,19 +27,39 @@ const sortList = [
   { frontend: "Reversert alfabetisk", backend: "name_DESC" }
 ];
 
-export default function SortOverlay(props) {
-  const closeOverlay = () => {
+function SortOverlay(props) {
+  const setSort = frontend => {
+    props.setSort(
+      sortList.find(el => {
+        return el.frontend === frontend;
+      }).backend
+    );
     props.setOpen(false);
   };
 
   return (
-    <Overlay isVisible={props.isOpen}>
+    <Overlay
+      isVisible={props.isOpen}
+      onBackdropPress={() => {
+        props.setOpen(false);
+      }}
+      height="auto"
+    >
       <View>
-        <Text>Sortér på:</Text>
+        <Text style={{ fontSize: 25, margin: 15 }}>Sortér på:</Text>
         <FlatList
+          style={{ marginLeft: 25 }}
           data={sortList}
           renderItem={({ item }) => (
-            <ListItem title={item.frontend} onPress={closeOverlay} />
+            <ListItem
+              title={item.frontend}
+              onPress={() => {
+                setSort(item.frontend);
+              }}
+              titleStyle={
+                props.sort === item.backend ? { fontWeight: "800" } : {}
+              }
+            />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -30,3 +67,8 @@ export default function SortOverlay(props) {
     </Overlay>
   );
 }
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SortOverlay);

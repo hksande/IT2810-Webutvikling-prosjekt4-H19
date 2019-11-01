@@ -9,7 +9,7 @@ export default function SortContainer() {
 
   return (
     <View>
-      <SearchBar setOpen={setSortOpen}/>
+      <SearchBar setOpen={setSortOpen} />
       <SortOverlay isOpen={isSortOpen} setOpen={setSortOpen} />
     </View>
   );

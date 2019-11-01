@@ -8,7 +8,7 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
-import data from "./data.js";
+import data from "../data.js";
 
 export default function List({ navigation }) {
   const [favorites, addToFavorites] = useState([]);

@@ -4,6 +4,9 @@ import { ThemeProvider } from "react-native-elements";
 import SortContainer from "./components/SortContainer";
 import { Provider } from "react-redux";
 import store from "./store/configureStore";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "react-apollo";
+import Start from "./ProductNav.js";
 
 const theme = {
   colors: {
@@ -16,14 +19,33 @@ const theme = {
   }
 };
 
+const client = new ApolloClient({
+  uri: "http://it2810-24.idi.ntnu.no:5000/graphql",
+  onError: ({ networkError, graphQLErrors }) => {
+    console.log("graphQLErrors", graphQLErrors);
+    console.log("networkError", networkError);
+  }
+});
+
 export default function App() {
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <View>
-          <SortContainer />
-        </View>
-      </ThemeProvider>
-    </Provider>
+    <ApolloProvider client={client}>
+      <Provider store={store}>
+        <ThemeProvider theme={theme}>
+          <View style={styles.container}>
+            <Start />
+          </View>
+        </ThemeProvider>
+      </Provider>
+    </ApolloProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff"
+    //alignItems: "center",
+    //justifyContent: "center"
+  }
+});

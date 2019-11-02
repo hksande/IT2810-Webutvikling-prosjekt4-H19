@@ -8,10 +8,7 @@ import { Header } from "react-native-elements";
 export const ProductNav = createStackNavigator(
   {
     Products: {
-      screen: List,
-      navigationOptions: {
-        header: null
-      }
+      screen: List
     },
     Product: {
       screen: Product

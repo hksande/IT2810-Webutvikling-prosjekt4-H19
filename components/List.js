@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Component } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Filtering from "./Filtering";
 import {
   StyleSheet,
   View,
@@ -8,10 +9,13 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
+import { Header } from "react-native-elements";
 import data from "../data.js";
 
 export default function List({ navigation }) {
   const [favorites, addToFavorites] = useState([]);
+
+
 
   const products = data.splice(0, 10);
 
@@ -96,3 +100,26 @@ export default function List({ navigation }) {
     </View>
   );
 }
+
+List.navigationOptions = {
+  header: (
+    <Header
+      rightComponent = {<Filtering/>}
+      centerComponent={{
+        text: "Produktliste",
+        style: {
+          color: "white",
+          fontSize: 20,
+          fontFamily: "Verdana"
+        }
+      }}
+      barStyle="light-content"
+      containerStyle={{
+        backgroundColor: "#722f37",
+        justifyContent: "space-between",
+        borderBottomColor: "#722f37",
+        borderBottomWidth: 5
+      }}
+    />
+  )
+}; 

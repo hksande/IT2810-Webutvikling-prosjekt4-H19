@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 import store from "./store/configureStore";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
-import Start from "./components/ProductNav.js";
+import { TabNav } from "./components/TabNav.js";
 
 const theme = {
   colors: {
@@ -33,7 +33,7 @@ export default function App() {
       <Provider store={store}>
         <ThemeProvider theme={theme}>
           <View style={styles.container}>
-            <Start />
+            <TabNav />
           </View>
         </ThemeProvider>
       </Provider>

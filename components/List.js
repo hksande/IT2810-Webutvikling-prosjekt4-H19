@@ -13,7 +13,7 @@ import data from "../data.js";
 export default function List({ navigation }) {
   const [favorites, addToFavorites] = useState([]);
 
-  const products = data.splice(0, 10);
+  const products = data; //.splice(0, 10);
 
   function handleListTap(item) {
     console.log(item.name);
@@ -103,7 +103,7 @@ export default function List({ navigation }) {
               >
                 <View>
                   <Icon
-                    name={!favorites.includes(item) ? "heart-o" : "heart"}
+                    name={item.purchased ? "heart" : "heart-o"}
                     size={40}
                     color="#722f37"
                   />

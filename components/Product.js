@@ -5,12 +5,12 @@ import BackButton from "./BackButton.js";
 import Icon from "react-native-vector-icons/FontAwesome";
 
 export default class Product extends Component {
-  static navigationOptions = {
+  static navigationOptions = ({ navigation }) => ({
     header: (
       <Header
         leftComponent={<BackButton />}
         centerComponent={{
-          text: "Detaljer",
+          text: navigation.getParam("name", "no-name"),
           style: {
             color: "white",
             fontSize: 20,
@@ -26,7 +26,7 @@ export default class Product extends Component {
         }}
       />
     )
-  };
+  });
 
   render() {
     return (
@@ -65,7 +65,7 @@ export default class Product extends Component {
         </Text>
         <Text
           style={{
-            fontSize: 16,
+            fontSize: 10,
             fontFamily: "Verdana",
             padding: 5,
             alignSelf: "center",

@@ -5,8 +5,8 @@ import List from "./List.js";
 import Product from "./Product.js";
 import { Header } from "react-native-elements";
 
-export const ProductNav = createStackNavigator(
-  {
+export const ProductNav = createAppContainer(
+  createStackNavigator({
     Products: {
       screen: List,
       navigationOptions: {
@@ -16,14 +16,8 @@ export const ProductNav = createStackNavigator(
     Product: {
       screen: Product
     }
-  },
-  {
-    initialRouteName: "Products"
-  }
+  })
 );
-const Start = createAppContainer(ProductNav);
-
-export default Start;
 
 /*
 

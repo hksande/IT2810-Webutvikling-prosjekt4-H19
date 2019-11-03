@@ -15,13 +15,19 @@ import data from "../data.js";
 export default function List({ navigation }) {
   const [favorites, addToFavorites] = useState([]);
 
-
-
-  const products = data.splice(0, 10);
+  const products = data; //.splice(0, 10);
 
   function handleListTap(item) {
     console.log(item.name);
-    navigation.navigate("Product");
+    navigation.navigate("Product", {
+      name: item.name,
+      img: item.img,
+      type: item.type,
+      origin: item.origin,
+      price: item.price,
+      description: item.description,
+      purchased: item.purchased
+    });
   }
 
   function addToFavorite(id) {
@@ -32,13 +38,11 @@ export default function List({ navigation }) {
         favorites.splice(index, 1);
         addToFavorites(favorites);
         console.log(favorites);
-        return false;
       } else if (element.id === id && !favorites.includes(element)) {
         element.purchased = 1;
         favorites.push(element);
         addToFavorites(favorites);
         console.log(favorites);
-        return true;
       }
     });
   }
@@ -46,7 +50,13 @@ export default function List({ navigation }) {
     <View>
       <FlatList
         ItemSeparatorComponent={() => (
-          <View style={{ height: 1, width: "100%" }} />
+          <View
+            style={{
+              height: 1,
+              width: "100%",
+              borderTopWidth: 0
+            }}
+          />
         )}
         data={products}
         keyExtractor={product => product.id}
@@ -58,8 +68,10 @@ export default function List({ navigation }) {
                 flexDirection: "row",
                 alignItems: "center",
                 padding: 10,
-                borderTopWidth: 0.5,
-                justifyContent: "flex-end"
+                justifyContent: "flex-end",
+                borderWidth: 0.5,
+                //borderTopWidth: 0
+                borderBottomWidth: 0
               }}
             >
               <Text
@@ -84,10 +96,16 @@ export default function List({ navigation }) {
                 }}
                 source={{ uri: item.img }}
               />
-              <TouchableOpacity onPress={() => addToFavorite(item.id)}>
+              <TouchableOpacity
+                onPress={() => {
+                  {
+                    addToFavorite(item.id);
+                  }
+                }}
+              >
                 <View>
                   <Icon
-                    name={!favorites.includes(item) ? "heart-o" : "heart"}
+                    name={item.purchased ? "heart" : "heart-o"}
                     size={40}
                     color="#722f37"
                   />

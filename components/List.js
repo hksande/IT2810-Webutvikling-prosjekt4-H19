@@ -101,6 +101,21 @@ const List = (props, { navigation }) => {
     console.log("Sort: ", props.sort);
   }
 
+  function handleLoadMore() {
+    fetchMore({
+      query: query,
+      variables: {
+        ...variables,
+        first: PRODUCTS_PER_PAGE + 1,
+        skip: (props.page - 1) * PRODUCTS_PER_PAGE
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        return fetchMoreResult;
+      }
+    });
+  }
+
   function handleListTap(item) {
     console.log(item.name);
     navigation.navigate("Product", {
@@ -132,7 +147,6 @@ const List = (props, { navigation }) => {
   }
   return (
     <View>
-      <SortContainer />
       <FlatList
         ItemSeparatorComponent={() => (
           <View
@@ -146,6 +160,8 @@ const List = (props, { navigation }) => {
         data={products}
         keyExtractor={product => product.id}
         extraData={favorites}
+        ListHeaderComponent={<SortContainer />}
+        onEndReachedThreshold={0}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleListTap(item)}>
             <View

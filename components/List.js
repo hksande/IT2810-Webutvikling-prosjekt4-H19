@@ -8,12 +8,50 @@ import {
   Text,
   TouchableOpacity
 } from "react-native";
-import data from "../data.js";
+import gql from "graphql-tag";
+import { useQuery } from "@apollo/react-hooks";
+
+const PRODUCTS_PER_PAGE = 10;
+
+// Query to fetch all products:
+
+const ALL_PRODUCTS = gql`
+  query allProducts($searchString: String, $orderBy: ProductOrderByInput) {
+    allProducts(searchString: $searchString, orderBy: $orderBy) {
+      name
+      id
+      type
+      price
+      purchased
+      origin
+      img
+      description
+    }
+  }
+`;
 
 export default function List({ navigation }) {
   const [favorites, addToFavorites] = useState([]);
 
-  const products = data.splice(0, 10);
+  // Decide which query and variables to use:
+  const query = ALL_PRODUCTS;
+  const dataName = "allProducts";
+  let variables = {
+    searchString: "",
+    orderBy: "price_ASC"
+  };
+
+  const { data, loading, error } = useQuery(query, {
+    variables: variables,
+    fetchPolicy: "cache"
+  });
+
+  if (loading) return <Text>Loading</Text>;
+  if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
+
+  if (data) {
+    products = data[dataName];
+  }
 
   function handleListTap(item) {
     console.log(item.name);

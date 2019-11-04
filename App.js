@@ -1,12 +1,12 @@
 import React from "react";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { ThemeProvider } from "react-native-elements";
 import SortContainer from "./components/SortContainer";
 import { Provider } from "react-redux";
 import store from "./store/configureStore";
 import ApolloClient from "apollo-boost";
 import { ApolloProvider } from "react-apollo";
-import Start from "./ProductNav.js";
+import Start from "./components/ProductNav.js";
 
 const theme = {
   colors: {

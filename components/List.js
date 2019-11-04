@@ -5,6 +5,16 @@ import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import SortContainer from "./SortContainer";
+import Filtering from "./Filtering";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Image,
+  Text,
+  TouchableOpacity
+} from "react-native";
+import { Header } from "react-native-elements";
 
 const PRODUCTS_PER_PAGE = 10;
 
@@ -94,7 +104,15 @@ const List = (props, { navigation }) => {
 
   function handleListTap(item) {
     console.log(item.name);
-    navigation.navigate("Product");
+    navigation.navigate("Product", {
+      name: item.name,
+      img: item.img,
+      type: item.type,
+      origin: item.origin,
+      price: item.price,
+      description: item.description,
+      purchased: item.purchased
+    });
   }
 
   function addToFavorite(id) {
@@ -105,13 +123,11 @@ const List = (props, { navigation }) => {
         favorites.splice(index, 1);
         addToFavorites(favorites);
         console.log(favorites);
-        return false;
       } else if (element.id === id && !favorites.includes(element)) {
         element.purchased = 1;
         favorites.push(element);
         addToFavorites(favorites);
         console.log(favorites);
-        return true;
       }
     });
   }
@@ -120,7 +136,13 @@ const List = (props, { navigation }) => {
       <SortContainer />
       <FlatList
         ItemSeparatorComponent={() => (
-          <View style={{ height: 1, width: "100%" }} />
+          <View
+            style={{
+              height: 1,
+              width: "100%",
+              borderTopWidth: 0
+            }}
+          />
         )}
         data={products}
         keyExtractor={product => product.id}
@@ -132,8 +154,10 @@ const List = (props, { navigation }) => {
                 flexDirection: "row",
                 alignItems: "center",
                 padding: 10,
-                borderTopWidth: 0.5,
-                justifyContent: "flex-end"
+                justifyContent: "flex-end",
+                borderWidth: 0.5,
+                //borderTopWidth: 0
+                borderBottomWidth: 0
               }}
             >
               <Text
@@ -158,10 +182,16 @@ const List = (props, { navigation }) => {
                 }}
                 source={{ uri: item.img }}
               />
-              <TouchableOpacity onPress={() => addToFavorite(item.id)}>
+              <TouchableOpacity
+                onPress={() => {
+                  {
+                    addToFavorite(item.id);
+                  }
+                }}
+              >
                 <View>
                   <Icon
-                    name={!favorites.includes(item) ? "heart-o" : "heart"}
+                    name={item.purchased ? "heart" : "heart-o"}
                     size={40}
                     color="#722f37"
                   />
@@ -176,3 +206,25 @@ const List = (props, { navigation }) => {
 };
 
 export default connect(mapStateToProps)(List);
+
+List.navigationOptions = {
+  header: (
+    <Header
+      rightComponent = {<Filtering/>}
+      centerComponent={{
+        text: "Produktliste",
+        style: {
+          color: "white",
+          fontSize: 20,
+        }
+      }}
+      barStyle="light-content"
+      containerStyle={{
+        backgroundColor: "#722f37",
+        justifyContent: "space-between",
+        borderBottomColor: "#722f37",
+        borderBottomWidth: 5
+      }}
+    />
+  )
+}; 

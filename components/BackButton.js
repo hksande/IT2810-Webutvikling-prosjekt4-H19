@@ -8,7 +8,7 @@ class BackButton extends React.Component {
     return (
       <TouchableOpacity
         onPress={() => {
-          this.props.navigation.goBack();
+          this.props.navigation.navigate("Products");
         }}
       >
         <Icon name={"menu-unfold"} size={20} color="white" />

@@ -14,7 +14,6 @@ export default class Product extends Component {
           style: {
             color: "white",
             fontSize: 20,
-            fontFamily: "Verdana"
           }
         }}
         barStyle="light-content"
@@ -55,7 +54,6 @@ export default class Product extends Component {
         <Text
           style={{
             fontSize: 16,
-            fontFamily: "Verdana",
             padding: 5,
             alignSelf: "center",
             margin: 10
@@ -66,7 +64,6 @@ export default class Product extends Component {
         <Text
           style={{
             fontSize: 10,
-            fontFamily: "Verdana",
             padding: 5,
             alignSelf: "center",
             margin: 10,
@@ -78,7 +75,6 @@ export default class Product extends Component {
         <Text
           style={{
             fontSize: 16,
-            fontFamily: "Verdana",
             padding: 5,
             alignSelf: "center",
             margin: 10
@@ -89,7 +85,6 @@ export default class Product extends Component {
         <Text
           style={{
             fontSize: 16,
-            fontFamily: "Verdana",
             padding: 5,
             alignSelf: "center",
             margin: 10
@@ -103,7 +98,6 @@ export default class Product extends Component {
           ellipsizeMode="tail"
           style={{
             fontSize: 12,
-            fontFamily: "Verdana",
             alignSelf: "center",
             margin: 10,
             fontStyle: "italic"
@@ -115,7 +109,6 @@ export default class Product extends Component {
           <Text
             style={{
               fontSize: 8,
-              fontFamily: "Verdana",
               padding: 1,
               alignSelf: "center",
               margin: 10,

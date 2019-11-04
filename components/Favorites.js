@@ -12,7 +12,6 @@ export default class Favorites extends Component {
             style: {
               color: "white",
               fontSize: 20,
-              fontFamily: "Verdana"
             }
           }}
           barStyle="light-content"

@@ -24,7 +24,6 @@ export const ProductNav = createAppContainer(
               style: {
                 color: "white",
                 fontSize: 20,
-                fontFamily: "Verdana"
               }
             }}
             barStyle="light-content"

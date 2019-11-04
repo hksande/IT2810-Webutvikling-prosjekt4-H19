@@ -128,7 +128,6 @@ List.navigationOptions = {
         style: {
           color: "white",
           fontSize: 20,
-          fontFamily: "Verdana"
         }
       }}
       barStyle="light-content"

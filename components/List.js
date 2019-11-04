@@ -1,23 +1,18 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  Image,
-  Text,
-  TouchableOpacity
-} from "react-native";
+import { View, FlatList, Image, Text, TouchableOpacity } from "react-native";
+import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
+import SortContainer from "./SortContainer";
 
 const PRODUCTS_PER_PAGE = 10;
 
 // Query to fetch all products:
 
 const ALL_PRODUCTS = gql`
-  query allProducts($searchString: String, $orderBy: ProductOrderByInput) {
-    allProducts(searchString: $searchString, orderBy: $orderBy) {
+  query allProducts($searchString: String, $sort: ProductOrderByInput) {
+    allProducts(searchString: $searchString, orderBy: $sort) {
       name
       id
       type
@@ -30,18 +25,60 @@ const ALL_PRODUCTS = gql`
   }
 `;
 
-export default function List({ navigation }) {
+// Query to fetch products based on type:
+
+const GET_PRODUCTS_BY_TYPE = gql`
+  query getProductsByType(
+    $searchString: String
+    $sort: ProductOrderByInput
+    $type: String
+    $first: Int
+    $skip: Int
+  ) {
+    getProductsByType(
+      searchString: $searchString
+      orderBy: $sort
+      type: $type
+      first: $first
+      skip: $skip
+    ) {
+      name
+      id
+      type
+      price
+      purchased
+      origin
+      img
+      description
+    }
+  }
+`;
+
+function mapStateToProps(state) {
+  return {
+    sort: state.filter.sort,
+    searchString: state.filter.searchString,
+    filter: state.filter.typeFilter
+  };
+}
+
+const List = (props, { navigation }) => {
   const [favorites, addToFavorites] = useState([]);
 
   // Decide which query and variables to use:
-  const query = ALL_PRODUCTS;
-  const dataName = "allProducts";
+  const filter = props.filter;
+  const query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
+  const dataName = filter === null ? "allProducts" : "getProductsByType";
   let variables = {
-    searchString: "",
-    orderBy: "price_ASC"
+    searchString: props.searchString,
+    sort: props.sort,
+    first: PRODUCTS_PER_PAGE,
+    skip: 0
   };
+  variables =
+    filter === null ? { ...variables } : { ...variables, type: filter };
 
-  const { data, loading, error } = useQuery(query, {
+  const { data, fetchMore, refetch, loading, error } = useQuery(query, {
     variables: variables,
     fetchPolicy: "cache"
   });
@@ -51,6 +88,8 @@ export default function List({ navigation }) {
 
   if (data) {
     products = data[dataName];
+    console.log("Search: ", props.searchString);
+    console.log("Sort: ", props.sort);
   }
 
   function handleListTap(item) {
@@ -78,6 +117,7 @@ export default function List({ navigation }) {
   }
   return (
     <View>
+      <SortContainer />
       <FlatList
         ItemSeparatorComponent={() => (
           <View style={{ height: 1, width: "100%" }} />
@@ -133,4 +173,6 @@ export default function List({ navigation }) {
       />
     </View>
   );
-}
+};
+
+export default connect(mapStateToProps)(List);

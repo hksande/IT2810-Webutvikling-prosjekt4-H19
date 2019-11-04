@@ -16,7 +16,6 @@ export default class Product extends Component {
           style: {
             color: "white",
             fontSize: 20,
-            fontFamily: "Verdana"
           }
         }}
         barStyle="light-content"

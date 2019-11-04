@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { View, FlatList, Image, Text, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
@@ -210,12 +209,12 @@ export default connect(mapStateToProps)(List);
 List.navigationOptions = {
   header: (
     <Header
-      rightComponent = {<Filtering/>}
+      rightComponent={<Filtering />}
       centerComponent={{
         text: "Produktliste",
         style: {
           color: "white",
-          fontSize: 20,
+          fontSize: 20
         }
       }}
       barStyle="light-content"
@@ -227,4 +226,4 @@ List.navigationOptions = {
       }}
     />
   )
-}; 
+};

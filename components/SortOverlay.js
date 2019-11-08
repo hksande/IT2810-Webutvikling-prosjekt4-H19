@@ -2,13 +2,13 @@ import React from "react";
 import { Overlay, Text, ListItem } from "react-native-elements";
 import { View, FlatList } from "react-native";
 import { connect } from "react-redux";
-import { setSort } from "../actions/index";
+import { setSort, setPage } from "../actions/index";
 
 function mapDispatchToProps(dispatch) {
   return {
     setSort: sort => {
       dispatch(setSort({ sort }));
-      //dispatch(setPage({ change: 0 }));
+      dispatch(setPage({ change: 0 }));
     }
   };
 }
@@ -28,6 +28,7 @@ const sortList = [
 ];
 
 function SortOverlay(props) {
+  
   const setSort = frontend => {
     props.setSort(
       sortList.find(el => {

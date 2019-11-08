@@ -1,5 +1,7 @@
 import { SET_SORT, SET_SEARCH, SET_FILTER } from "../constants/actionTypes";
 
+/* Keeps track of active sorting, filtering and searchword */
+
 const defaultState = {
   sort: null,
   searchString: null,

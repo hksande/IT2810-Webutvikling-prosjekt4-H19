@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { connect } from "react-redux";
 import gql from "graphql-tag";
@@ -14,14 +14,27 @@ import {
   TouchableOpacity
 } from "react-native";
 import { Header } from "react-native-elements";
+import { setPage } from "../actions/index";
 
 const PRODUCTS_PER_PAGE = 10;
+
+// TODO; implement pagination from reducer
 
 // Query to fetch all products:
 
 const ALL_PRODUCTS = gql`
-  query allProducts($searchString: String, $sort: ProductOrderByInput) {
-    allProducts(searchString: $searchString, orderBy: $sort) {
+  query allProducts(
+    $searchString: String
+    $sort: ProductOrderByInput
+    $first: Int
+    $skip: Int
+  ) {
+    allProducts(
+      searchString: $searchString
+      orderBy: $sort
+      first: $first
+      skip: $skip
+    ) {
       name
       id
       type
@@ -40,14 +53,14 @@ const GET_PRODUCTS_BY_TYPE = gql`
   query getProductsByType(
     $searchString: String
     $sort: ProductOrderByInput
-    $type: String
+    $filter: String
     $first: Int
     $skip: Int
   ) {
     getProductsByType(
       searchString: $searchString
       orderBy: $sort
-      type: $type
+      type: $filter
       first: $first
       skip: $skip
     ) {
@@ -67,7 +80,16 @@ function mapStateToProps(state) {
   return {
     sort: state.filter.sort,
     searchString: state.filter.searchString,
-    filter: state.filter.typeFilter
+    filter: state.filter.typeFilter,
+    page: state.pagination.page
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setPage: change => {
+      dispatch(setPage({ change }));
+    }
   };
 }
 
@@ -81,39 +103,50 @@ const List = (props, { navigation }) => {
   let variables = {
     searchString: props.searchString,
     sort: props.sort,
-    first: PRODUCTS_PER_PAGE,
+    first: 0,
     skip: 0
   };
   variables =
-    filter === null ? { ...variables } : { ...variables, type: filter };
+    filter === null
+      ? { ...variables }
+      : filter === undefined
+      ? { ...variables }
+      : { ...variables, type: filter };
 
   const { data, fetchMore, refetch, loading, error } = useQuery(query, {
     variables: variables,
     fetchPolicy: "cache"
   });
 
+  useEffect(() => {
+    fetchMore({
+      query: query,
+      variables: {
+        ...variables,
+        first: PRODUCTS_PER_PAGE,
+        skip: PRODUCTS_PER_PAGE * (props.page - 1)
+      },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        if (!fetchMoreResult) return prev;
+        result = {
+          [dataName]: prev[dataName].concat(fetchMoreResult[dataName])
+        };
+        return result;
+      }
+    });
+  }, [props.page]);
+
   if (loading) return <Text>Loading</Text>;
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
   if (data) {
     products = data[dataName];
-    console.log("Search: ", props.searchString);
-    console.log("Sort: ", props.sort);
+    console.log("Page: ", props.page);
+    console.log(variables);
   }
 
   function handleLoadMore() {
-    fetchMore({
-      query: query,
-      variables: {
-        ...variables,
-        first: PRODUCTS_PER_PAGE + 1,
-        skip: (props.page - 1) * PRODUCTS_PER_PAGE
-      },
-      updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
-        return fetchMoreResult;
-      }
-    });
+    props.setPage(1);
   }
 
   function handleListTap(item) {
@@ -158,10 +191,11 @@ const List = (props, { navigation }) => {
           />
         )}
         data={products}
-        keyExtractor={product => product.id}
+        keyExtractor={product => product.name}
         extraData={favorites}
         ListHeaderComponent={<SortContainer />}
-        onEndReachedThreshold={0}
+        onEndReachedThreshold={0.5}
+        onEndReached={handleLoadMore}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => handleListTap(item)}>
             <View
@@ -220,7 +254,10 @@ const List = (props, { navigation }) => {
   );
 };
 
-export default connect(mapStateToProps)(List);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(List);
 
 List.navigationOptions = {
   header: (

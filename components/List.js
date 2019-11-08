@@ -4,9 +4,7 @@ import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import SortContainer from "./SortContainer";
-import Filtering from "./Filtering";
 import {
-  StyleSheet,
   View,
   FlatList,
   Image,
@@ -54,14 +52,14 @@ const GET_PRODUCTS_BY_TYPE = gql`
   query getProductsByType(
     $searchString: String
     $sort: ProductOrderByInput
-    $filter: String
+    $type: String
     $first: Int
     $skip: Int
   ) {
     getProductsByType(
       searchString: $searchString
       orderBy: $sort
-      type: $filter
+      type: $type
       first: $first
       skip: $skip
     ) {
@@ -81,7 +79,7 @@ function mapStateToProps(state) {
   return {
     sort: state.filter.sort,
     searchString: state.filter.searchString,
-    filter: state.filter.typeFilter,
+    filter: state.filter.filter,
     page: state.pagination.page
   };
 }
@@ -98,9 +96,9 @@ const List = (props, { navigation }) => {
   const [favorites, addToFavorites] = useState([]);
 
   // Decide which query and variables to use:
-  const filter = props.filter;
-  const query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
-  const dataName = filter === null ? "allProducts" : "getProductsByType";
+  let filter = props.filter;
+  let query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
+  let dataName = filter === null ? "allProducts" : "getProductsByType";
   let variables = {
     searchString: props.searchString,
     sort: props.sort,
@@ -114,11 +112,12 @@ const List = (props, { navigation }) => {
       ? { ...variables }
       : { ...variables, type: filter };
 
-  const { data, fetchMore, refetch, loading, error } = useQuery(query, {
-    variables: variables,
-    fetchPolicy: "cache"
+  // Execute query:
+  const { data, fetchMore, loading, error } = useQuery(query, {
+    variables: variables
   });
 
+  // Fetch more products on scroll:
   useEffect(() => {
     fetchMore({
       query: query,
@@ -128,7 +127,9 @@ const List = (props, { navigation }) => {
         skip: PRODUCTS_PER_PAGE * props.page
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) {
+          return prev;
+        }
         result = {
           [dataName]: prev[dataName].concat(fetchMoreResult[dataName])
         };
@@ -142,10 +143,12 @@ const List = (props, { navigation }) => {
 
   if (data) {
     products = data[dataName];
+    console.log(products);
     console.log("Page: ", props.page);
-    console.log(variables);
+    console.log("variables: ", variables);
   }
 
+  // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
   function handleLoadMore() {
     props.setPage(1);
   }
@@ -270,25 +273,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(List);
-
-List.navigationOptions = {
-  header: (
-    <Header
-      //rightComponent={<Filtering />}
-      centerComponent={{
-        text: "Produktliste",
-        style: {
-          color: "white",
-          fontSize: 20
-        }
-      }}
-      barStyle="light-content"
-      containerStyle={{
-        backgroundColor: "#722f37",
-        justifyContent: "space-between",
-        borderBottomColor: "#722f37",
-        borderBottomWidth: 5
-      }}
-    />
-  )
-};

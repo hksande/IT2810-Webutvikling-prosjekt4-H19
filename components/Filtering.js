@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { View, TouchableOpacity, Text, ImageBackground } from "react-native";
-import { setFilter } from "./../actions/index";
+import { setFilter, setPage } from "./../actions/index";
 
 const TYPE = [
   { filter: "Alle", image: require("./../assets/Alle.jpg") },
@@ -17,6 +17,7 @@ function mapDispatchToProps(dispatch) {
     setFilter: filter => {
       filter = filter === "Alle" ? null : filter;
       dispatch(setFilter({ filter }));
+      dispatch(setPage({ change: 0 }));
     }
   };
 }

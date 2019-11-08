@@ -17,7 +17,7 @@ const filterReducer = (state = defaultState, action) => {
     case SET_FILTER:
       return {
         ...state,
-        typeFilter:
+        filter:
           action.payload.filter === undefined ? null : action.payload.filter
       };
     default:

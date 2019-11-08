@@ -15,7 +15,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Header } from "react-native-elements";
-import { setPage } from "../actions/index";
+import { setPage, setFilter } from "../actions/index";
 
 const PRODUCTS_PER_PAGE = 10;
 
@@ -54,14 +54,14 @@ const GET_PRODUCTS_BY_TYPE = gql`
   query getProductsByType(
     $searchString: String
     $sort: ProductOrderByInput
-    $filter: String
+    $type: String
     $first: Int
     $skip: Int
   ) {
     getProductsByType(
       searchString: $searchString
       orderBy: $sort
-      type: $filter
+      type: $type
       first: $first
       skip: $skip
     ) {
@@ -81,7 +81,7 @@ function mapStateToProps(state) {
   return {
     sort: state.filter.sort,
     searchString: state.filter.searchString,
-    filter: state.filter.typeFilter,
+    filter: state.filter.filter,
     page: state.pagination.page
   };
 }
@@ -98,9 +98,11 @@ const List = (props, { navigation }) => {
   const [favorites, addToFavorites] = useState([]);
 
   // Decide which query and variables to use:
-  const filter = props.filter;
-  const query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
-  const dataName = filter === null ? "allProducts" : "getProductsByType";
+  let filter = props.filter;
+  console.log(filter);
+  let query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
+  let dataName = filter === null ? "allProducts" : "getProductsByType";
+  console.log(dataName);
   let variables = {
     searchString: props.searchString,
     sort: props.sort,
@@ -114,11 +116,11 @@ const List = (props, { navigation }) => {
       ? { ...variables }
       : { ...variables, type: filter };
 
-  const { data, fetchMore, refetch, loading, error } = useQuery(query, {
-    variables: variables,
-    fetchPolicy: "cache"
+  const { data, fetchMore, loading, error } = useQuery(query, {
+    variables: variables
   });
 
+  // Implement infinite scroll:
   useEffect(() => {
     fetchMore({
       query: query,
@@ -142,8 +144,9 @@ const List = (props, { navigation }) => {
 
   if (data) {
     products = data[dataName];
+    console.log(products);
     console.log("Page: ", props.page);
-    console.log(variables);
+    console.log("variables: ", variables);
   }
 
   function handleLoadMore() {

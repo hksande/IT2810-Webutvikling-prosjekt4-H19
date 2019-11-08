@@ -137,14 +137,7 @@ const List = (props, { navigation }) => {
     });
   }, [props.page]);
 
-  if (loading) {
-    console.log("loading");
-    return (
-      <View style={{ display: "flex", justifyContent: "center" }}>
-        <ActivityIndicator />
-      </View>
-    );
-  }
+  if (loading) return <View></View>;
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
   if (data) {
@@ -202,6 +195,17 @@ const List = (props, { navigation }) => {
         keyExtractor={product => product.name}
         extraData={favorites}
         ListHeaderComponent={<SortContainer />}
+        ListFooterComponent={
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              padding: 20
+            }}
+          >
+            <ActivityIndicator />
+          </View>
+        }
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
         renderItem={({ item }) => (

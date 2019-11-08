@@ -16,22 +16,21 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
+function mapStateToProps(state) {
+  return {
+    searchString: state.filter.searchString
+  };
+}
+
 function Search(props) {
-  const [searchValue, setSearchValue] = useState("");
-  const [timeout, setNewTimeout] = useState(null);
+  const [searchValue, setSearchValue] = useState(props.searchString);
 
   function handleSearchChange(newSearch) {
     setSearchValue(newSearch);
-    clearTimeout(timeout); // clears the old timer
-    setNewTimeout(
-      setTimeout(() => {
-        props.setSearch(newSearch);
-      }, 1500)
-    );
-    if (newSearch === "") {
-      clearTimeout(timeout);
-      props.setSearch(newSearch);
-    }
+  }
+
+  function handleSearch() {
+    props.setSearch(searchValue);
   }
 
   setOpen = () => {
@@ -58,9 +57,16 @@ function Search(props) {
       />
       <SearchBar
         placeholder="Søk i drikkevarer..."
+        onSubmitEditing={handleSearch}
         onChangeText={handleSearchChange}
         value={searchValue}
         lightTheme={true}
+        inputContainerStyle={{ borderRadius: 15 }}
+        containerStyle={{
+          backgroundColor: "#722f37",
+          borderBottomWidth: 0,
+          borderTopWidth: 0
+        }}
       />
       <Button
         onPress={setOpen}
@@ -75,6 +81,6 @@ function Search(props) {
 }
 
 export default connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(Search);

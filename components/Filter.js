@@ -1,7 +1,14 @@
 import React from "react";
 import { connect } from "react-redux";
-import { View, TouchableOpacity, Text, ImageBackground } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  ImageBackground,
+  Dimensions
+} from "react-native";
 import { setFilter, setPage } from "../actions/index";
+import { Grid } from "native-base";
 
 const TYPE = [
   { filter: "Alle", image: require("./../assets/Alle.jpg") },
@@ -33,21 +40,37 @@ function Filtering(props) {
     console.log(type);
     filter = type;
     props.setFilter(filter);
-    //props.setOpen(false);
   };
 
   return (
-    <View>
+    <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
       {TYPE.map((el, index) => {
         return (
           <TouchableOpacity
+            style={{ width: Dimensions.get("window").width * 0.5 }}
             key={index}
             onPress={() => {
               handleTypePress(el.filter);
             }}
           >
             <ImageBackground source={el.image} style={{ height: 100 }}>
-              <Text style={{ color: "white" }}>{el.filter}</Text>
+              <View
+                style={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                  flex: 1
+                }}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontWeight: "800",
+                    fontSize: 20
+                  }}
+                >
+                  {el.filter.toUpperCase()}
+                </Text>
+              </View>
             </ImageBackground>
           </TouchableOpacity>
         );

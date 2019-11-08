@@ -127,7 +127,9 @@ const List = (props, { navigation }) => {
         skip: PRODUCTS_PER_PAGE * props.page
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) return prev;
+        if (!fetchMoreResult) {
+          return prev;
+        }
         result = {
           [dataName]: prev[dataName].concat(fetchMoreResult[dataName])
         };

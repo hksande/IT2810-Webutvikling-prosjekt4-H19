@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { View } from "react-native";
 import { SearchBar, Button } from "react-native-elements";
-import Icon from "react-native-vector-icons/Octicons";
+import Octicon from "react-native-vector-icons/Octicons";
+import Feathericon from "react-native-vector-icons/Feather";
 import { setSearch, setPage } from "./../actions/index";
 import { connect } from "react-redux";
-import Filtering from "./Filter";
 import { Header } from "react-native-elements";
 
 function mapDispatchToProps(dispatch) {
@@ -33,8 +33,12 @@ function Search(props) {
     props.setSearch(searchValue);
   }
 
-  setOpen = () => {
-    props.setOpen(true);
+  setSortOpen = () => {
+    props.setSortOpen(true);
+  };
+
+  setFilterOpen = () => {
+    props.setFilterOpen(true);
   };
 
   return (
@@ -61,21 +65,43 @@ function Search(props) {
         onChangeText={handleSearchChange}
         value={searchValue}
         lightTheme={true}
-        inputContainerStyle={{ borderRadius: 15 }}
+        inputContainerStyle={{
+          borderRadius: 15,
+          backgroundColor: "white",
+          margin: 10
+        }}
         containerStyle={{
           backgroundColor: "#722f37",
           borderBottomWidth: 0,
           borderTopWidth: 0
         }}
       />
-      <Button
-        onPress={setOpen}
-        title="Sortér"
-        titleStyle={{ marginRight: 15 }}
-        icon={<Icon name="settings" size={30} color="white" />}
-        iconRight
-      />
-      <Filtering />
+      <View
+        style={{
+          flex: 1,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          backgroundColor: "#722f37",
+          padding: 7
+        }}
+      >
+        <Button
+          buttonStyle={{ backgroundColor: "#722f37", borderRadius: 0 }}
+          onPress={setFilterOpen}
+          title="Filtrér"
+          titleStyle={{ marginLeft: 15 }}
+          icon={<Feathericon name="filter" size={30} color="white" />}
+          iconLeft
+        />
+        <Button
+          buttonStyle={{ backgroundColor: "#722f37", borderRadius: 0 }}
+          onPress={setSortOpen}
+          title="Sortér"
+          titleStyle={{ marginRight: 15 }}
+          icon={<Octicon name="settings" size={30} color="white" />}
+          iconRight
+        />
+      </View>
     </View>
   );
 }

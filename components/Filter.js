@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
+import { Overlay } from "react-native-elements";
 import {
   View,
   TouchableOpacity,
@@ -40,42 +41,53 @@ function Filtering(props) {
     console.log(type);
     filter = type;
     props.setFilter(filter);
+    props.setOpen(false);
   };
 
   return (
-    <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
-      {TYPE.map((el, index) => {
-        return (
-          <TouchableOpacity
-            style={{ width: Dimensions.get("window").width * 0.5 }}
-            key={index}
-            onPress={() => {
-              handleTypePress(el.filter);
-            }}
-          >
-            <ImageBackground source={el.image} style={{ height: 100 }}>
-              <View
-                style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1
-                }}
-              >
-                <Text
+    <Overlay
+      isVisible={props.isOpen}
+      onBackdropPress={() => {
+        props.setOpen(false);
+      }}
+      height="auto"
+      width={Dimensions.get("window").width}
+      overlayStyle={{ padding: 0, marginBottom: 0 }}
+    >
+      <View style={{ flexWrap: "wrap", flexDirection: "row" }}>
+        {TYPE.map((el, index) => {
+          return (
+            <TouchableOpacity
+              style={{ width: Dimensions.get("window").width * 0.5 }}
+              key={index}
+              onPress={() => {
+                handleTypePress(el.filter);
+              }}
+            >
+              <ImageBackground source={el.image} style={{ height: 100 }}>
+                <View
                   style={{
-                    color: "white",
-                    fontWeight: "800",
-                    fontSize: 20
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flex: 1
                   }}
                 >
-                  {el.filter.toUpperCase()}
-                </Text>
-              </View>
-            </ImageBackground>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+                  <Text
+                    style={{
+                      color: "white",
+                      fontWeight: "800",
+                      fontSize: 20
+                    }}
+                  >
+                    {el.filter.toUpperCase()}
+                  </Text>
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </Overlay>
   );
 }
 

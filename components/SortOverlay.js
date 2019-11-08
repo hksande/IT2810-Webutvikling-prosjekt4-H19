@@ -28,7 +28,6 @@ const sortList = [
 ];
 
 function SortOverlay(props) {
-  
   const setSort = frontend => {
     props.setSort(
       sortList.find(el => {
@@ -39,7 +38,6 @@ function SortOverlay(props) {
   };
 
   return (
-  
     <Overlay
       isVisible={props.isOpen}
       onBackdropPress={() => {

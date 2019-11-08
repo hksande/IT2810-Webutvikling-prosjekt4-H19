@@ -11,7 +11,8 @@ import {
   FlatList,
   Image,
   Text,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import { Header } from "react-native-elements";
 import { setPage } from "../actions/index";
@@ -103,7 +104,7 @@ const List = (props, { navigation }) => {
   let variables = {
     searchString: props.searchString,
     sort: props.sort,
-    first: 0,
+    first: PRODUCTS_PER_PAGE,
     skip: 0
   };
   variables =
@@ -124,7 +125,7 @@ const List = (props, { navigation }) => {
       variables: {
         ...variables,
         first: PRODUCTS_PER_PAGE,
-        skip: PRODUCTS_PER_PAGE * (props.page - 1)
+        skip: PRODUCTS_PER_PAGE * props.page
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
@@ -136,7 +137,14 @@ const List = (props, { navigation }) => {
     });
   }, [props.page]);
 
-  if (loading) return <Text>Loading</Text>;
+  if (loading) {
+    console.log("loading");
+    return (
+      <View style={{ display: "flex", justifyContent: "center" }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
   if (data) {
@@ -151,7 +159,7 @@ const List = (props, { navigation }) => {
 
   function handleListTap(item) {
     console.log(item.name);
-    navigation.navigate("Product", {
+    props.navigation.navigate("Product", {
       name: item.name,
       img: item.img,
       type: item.type,

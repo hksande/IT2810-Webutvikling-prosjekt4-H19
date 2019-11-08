@@ -4,6 +4,9 @@ import { SearchBar, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/Octicons";
 import { setSearch } from "./../actions/index";
 import { connect } from "react-redux";
+import Filtering from "./Filtering";
+import { Header } from "react-native-elements";
+
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -35,9 +38,27 @@ function Search(props) {
   setOpen = () => {
     props.setOpen(true);
   };
+  
 
   return (
     <View style={{ marginTop: 27 }}>
+      <Header
+      rightComponent={<Filtering />}
+      centerComponent={{
+        text: "Produktliste",
+        style: {
+          color: "white",
+          fontSize: 20
+        }
+      }}
+      barStyle="light-content"
+      containerStyle={{
+        backgroundColor: "#722f37",
+        justifyContent: "space-between",
+        borderBottomColor: "#722f37",
+        borderBottomWidth: 5
+      }}
+    />
       <SearchBar
         placeholder="Søk i drikkevarer..."
         onChangeText={handleSearchChange}
@@ -59,3 +80,4 @@ export default connect(
   null,
   mapDispatchToProps
 )(Search);
+

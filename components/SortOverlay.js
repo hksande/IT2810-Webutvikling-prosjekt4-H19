@@ -38,6 +38,7 @@ function SortOverlay(props) {
   };
 
   return (
+  
     <Overlay
       isVisible={props.isOpen}
       onBackdropPress={() => {

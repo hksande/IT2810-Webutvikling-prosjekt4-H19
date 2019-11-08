@@ -274,7 +274,7 @@ export default connect(
 List.navigationOptions = {
   header: (
     <Header
-      rightComponent={<Filtering />}
+      //rightComponent={<Filtering />}
       centerComponent={{
         text: "Produktliste",
         style: {

@@ -1,49 +1,61 @@
-import React, { Component, Text } from "react";
-import { Container, Icon as IconBack, Header, Title, Content, Button, Right, Body, Left, Picker, Form } from "native-base";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { HeaderTitle } from "react-navigation-stack";
+import React from "react";
+import { connect } from "react-redux";
+import { View, TouchableOpacity, Text, ImageBackground } from "react-native";
+import { setFilter } from "./../actions/index";
 
+const TYPE = [
+  { filter: "Alle", image: require("./../assets/Alle.jpg") },
+  { filter: "Rødvin", image: require("./../assets/Rødvin.jpg") },
+  { filter: "Hvitvin", image: require("./../assets/Hvitvin.jpg") },
+  { filter: "Musserende", image: require("./../assets/Musserende.jpg") },
+  { filter: "Øl", image: require("./../assets/Øl.jpg") },
+  { filter: "Sprit", image: require("./../assets/Sprit.jpg") }
+];
 
-
-export default class Filtering extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      selected: "key1"
-    };
-  }
-  onValueChange(value) {
-    this.setState({
-      selected: value
-    });
-  }
-  render() {
-    return (
-      
-            <Picker
-              renderHeader={backAction =>
-                <Header style={{ backgroundColor: "#722f37" }}>
-                  <Left>
-                    <Button transparent onPress={backAction}>
-                      <IconBack name="arrow-back" style={{ color: "#fff" }} />
-                    </Button>
-                  </Left>
-                  <Body style={{ flex: 3 }}>
-                    <Title style={{ color: "#fff" }}> Velg Kategori</Title>
-                  </Body>
-                  <Right />
-                </Header>}
-              mode="dropdown"
-              iosIcon={<Icon name="filter-variant" color = "#fff" />}
-              onValueChange={this.onValueChange.bind(this)}
-            >
-              <Picker.Item label="Rødvin" value="key0" />
-              <Picker.Item label="Hvitvin" value="key1" />
-              <Picker.Item label="Musserende" value="key2" />
-              <Picker.Item label="Øl" value="key3" />
-              <Picker.Item label="Vodka" value="key4" />
-            </Picker>
-         
-    );
-  }
+function mapDispatchToProps(dispatch) {
+  return {
+    setFilter: filter => {
+      filter = filter === "Alle" ? null : filter;
+      dispatch(setFilter({ filter }));
+    }
+  };
 }
+
+function mapStateToProps(state) {
+  return {
+    filter: state.filter.filter
+  };
+}
+
+function Filtering(props) {
+  handleTypePress = type => {
+    console.log(type);
+    filter = type;
+    props.setFilter(filter);
+    //props.setOpen(false);
+  };
+
+  return (
+    <View>
+      {TYPE.map((el, index) => {
+        return (
+          <TouchableOpacity
+            key={index}
+            onPress={() => {
+              handleTypePress(el.filter);
+            }}
+          >
+            <ImageBackground source={el.image} style={{ height: 100 }}>
+              <Text style={{ color: "white" }}>{el.filter}</Text>
+            </ImageBackground>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Filtering);

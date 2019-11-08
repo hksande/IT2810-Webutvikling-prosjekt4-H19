@@ -4,7 +4,7 @@ import { SearchBar, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/Octicons";
 import { setSearch, setPage } from "./../actions/index";
 import { connect } from "react-redux";
-import Filtering from "./Filtering";
+import Filtering from "./Filter";
 import { Header } from "react-native-elements";
 
 function mapDispatchToProps(dispatch) {
@@ -39,9 +39,8 @@ function Search(props) {
   };
 
   return (
-    <View style={{ marginTop: 27 }}>
+    <View>
       <Header
-        //rightComponent={<Filtering />}
         centerComponent={{
           text: "Produktliste",
           style: {

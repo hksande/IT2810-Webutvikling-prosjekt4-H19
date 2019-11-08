@@ -4,9 +4,7 @@ import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
 import SortContainer from "./SortContainer";
-import Filtering from "./Filtering";
 import {
-  StyleSheet,
   View,
   FlatList,
   Image,
@@ -15,7 +13,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Header } from "react-native-elements";
-import { setPage, setFilter } from "../actions/index";
+import { setPage } from "../actions/index";
 
 const PRODUCTS_PER_PAGE = 10;
 
@@ -99,10 +97,8 @@ const List = (props, { navigation }) => {
 
   // Decide which query and variables to use:
   let filter = props.filter;
-  console.log(filter);
   let query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
   let dataName = filter === null ? "allProducts" : "getProductsByType";
-  console.log(dataName);
   let variables = {
     searchString: props.searchString,
     sort: props.sort,
@@ -116,11 +112,12 @@ const List = (props, { navigation }) => {
       ? { ...variables }
       : { ...variables, type: filter };
 
+  // Execute query:
   const { data, fetchMore, loading, error } = useQuery(query, {
     variables: variables
   });
 
-  // Implement infinite scroll:
+  // Fetch more products on scroll:
   useEffect(() => {
     fetchMore({
       query: query,
@@ -149,6 +146,7 @@ const List = (props, { navigation }) => {
     console.log("variables: ", variables);
   }
 
+  // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
   function handleLoadMore() {
     props.setPage(1);
   }
@@ -273,25 +271,3 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(List);
-
-List.navigationOptions = {
-  header: (
-    <Header
-      //rightComponent={<Filtering />}
-      centerComponent={{
-        text: "Produktliste",
-        style: {
-          color: "white",
-          fontSize: 20
-        }
-      }}
-      barStyle="light-content"
-      containerStyle={{
-        backgroundColor: "#722f37",
-        justifyContent: "space-between",
-        borderBottomColor: "#722f37",
-        borderBottomWidth: 5
-      }}
-    />
-  )
-};

@@ -225,7 +225,7 @@ export default connect(mapStateToProps)(List);
 List.navigationOptions = {
   header: (
     <Header
-      rightComponent={<Filtering />}
+      //rightComponent={<Filtering />}
       centerComponent={{
         text: "Produktliste",
         style: {

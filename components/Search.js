@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import Filtering from "./Filtering";
 import { Header } from "react-native-elements";
 
-
 function mapDispatchToProps(dispatch) {
   return {
     setSearch: searchString => {
@@ -38,27 +37,26 @@ function Search(props) {
   setOpen = () => {
     props.setOpen(true);
   };
-  
 
   return (
     <View style={{ marginTop: 27 }}>
       <Header
-      rightComponent={<Filtering />}
-      centerComponent={{
-        text: "Produktliste",
-        style: {
-          color: "white",
-          fontSize: 20
-        }
-      }}
-      barStyle="light-content"
-      containerStyle={{
-        backgroundColor: "#722f37",
-        justifyContent: "space-between",
-        borderBottomColor: "#722f37",
-        borderBottomWidth: 5
-      }}
-    />
+        //rightComponent={<Filtering />}
+        centerComponent={{
+          text: "Produktliste",
+          style: {
+            color: "white",
+            fontSize: 20
+          }
+        }}
+        barStyle="light-content"
+        containerStyle={{
+          backgroundColor: "#722f37",
+          justifyContent: "space-between",
+          borderBottomColor: "#722f37",
+          borderBottomWidth: 5
+        }}
+      />
       <SearchBar
         placeholder="Søk i drikkevarer..."
         onChangeText={handleSearchChange}
@@ -72,6 +70,7 @@ function Search(props) {
         icon={<Icon name="settings" size={30} color="white" />}
         iconRight
       />
+      <Filtering />
     </View>
   );
 }
@@ -80,4 +79,3 @@ export default connect(
   null,
   mapDispatchToProps
 )(Search);
-

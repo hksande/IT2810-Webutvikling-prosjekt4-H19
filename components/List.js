@@ -14,8 +14,11 @@ import {
   TouchableOpacity
 } from "react-native";
 import { Header } from "react-native-elements";
+import { setPage } from "../actions/index";
 
 const PRODUCTS_PER_PAGE = 10;
+
+// TODO; implement pagination from reducer
 
 // Query to fetch all products:
 
@@ -77,13 +80,21 @@ function mapStateToProps(state) {
   return {
     sort: state.filter.sort,
     searchString: state.filter.searchString,
-    filter: state.filter.typeFilter
+    filter: state.filter.typeFilter,
+    page: state.pagination.page
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setPage: change => {
+      dispatch(setPage({ change }));
+    }
   };
 }
 
 const List = (props, { navigation }) => {
   const [favorites, addToFavorites] = useState([]);
-  const [page, setPage] = useState(1);
 
   // Decide which query and variables to use:
   const filter = props.filter;
@@ -96,7 +107,11 @@ const List = (props, { navigation }) => {
     skip: 0
   };
   variables =
-    filter === null ? { ...variables } : { ...variables, type: filter };
+    filter === null
+      ? { ...variables }
+      : filter === undefined
+      ? { ...variables }
+      : { ...variables, type: filter };
 
   const { data, fetchMore, refetch, loading, error } = useQuery(query, {
     variables: variables,
@@ -109,32 +124,29 @@ const List = (props, { navigation }) => {
       variables: {
         ...variables,
         first: PRODUCTS_PER_PAGE,
-        skip: PRODUCTS_PER_PAGE * (page - 1)
+        skip: PRODUCTS_PER_PAGE * (props.page - 1)
       },
       updateQuery: (prev, { fetchMoreResult }) => {
         if (!fetchMoreResult) return prev;
         result = {
           [dataName]: prev[dataName].concat(fetchMoreResult[dataName])
         };
-        console.log("result: ", result[dataName].length);
-        console.log("prev: ", prev[dataName].length);
-        console.log("");
         return result;
       }
     });
-  }, [page]);
+  }, [props.page]);
 
   if (loading) return <Text>Loading</Text>;
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
   if (data) {
     products = data[dataName];
-    console.log("Page: ", page);
+    console.log("Page: ", props.page);
+    console.log(variables);
   }
 
   function handleLoadMore() {
-    newPage = page + 1;
-    setPage(newPage);
+    props.setPage(1);
   }
 
   function handleListTap(item) {
@@ -242,7 +254,10 @@ const List = (props, { navigation }) => {
   );
 };
 
-export default connect(mapStateToProps)(List);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(List);
 
 List.navigationOptions = {
   header: (

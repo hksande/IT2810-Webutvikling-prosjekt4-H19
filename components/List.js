@@ -10,7 +10,8 @@ import {
   Image,
   Text,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
+  AsyncStorage
 } from "react-native";
 import { Header } from "react-native-elements";
 import { setPage } from "../actions/index";
@@ -92,8 +93,9 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-const List = (props, { navigation }) => {
+const List = props => {
   const [favorites, addToFavorites] = useState([]);
+  const [color, setColor] = useState("heart-o");
 
   // Decide which query and variables to use:
   let filter = props.filter;
@@ -156,6 +158,7 @@ const List = (props, { navigation }) => {
   function handleListTap(item) {
     console.log(item.name);
     props.navigation.navigate("Product", {
+      id: item.id,
       name: item.name,
       img: item.img,
       type: item.type,
@@ -166,22 +169,84 @@ const List = (props, { navigation }) => {
     });
   }
 
-  function addToFavorite(id) {
-    products.forEach(element => {
-      if (element.id === id && favorites.includes(element)) {
+  async function isFavorite(name) {
+    let data = await AsyncStorage.getItem("product_key");
+    let json = JSON.parse(data);
+    for (let object in json) {
+      //console.log(object);
+      if (json[object].name == name) {
+        console.log("hei");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async function addToFavorite(name) {
+    //console.log("name: " + name);
+    //AsyncStorage.clear();
+    let favorite = await isFavorite(name); //console.log("isFavorite: " + favorite);
+    console.log("Length of all products loaded: ", products.length);
+    for (let i in products) {
+      let element = products[i];
+      if (element.name === name && favorite) {
         var index = favorites.indexOf(element);
         element.purchased = 0;
         favorites.splice(index, 1);
         addToFavorites(favorites);
-        console.log(favorites);
-      } else if (element.id === id && !favorites.includes(element)) {
+        _removeData(element.name);
+        setColor("heart-o"); //console.log(favorites);
+      } else if (element.name == name) {
+        //console.log(element);
         element.purchased = 1;
         favorites.push(element);
         addToFavorites(favorites);
-        console.log(favorites);
+        _storeData(element.name);
+        setColor("heart"); //console.log(favorites);
       }
-    });
+    }
   }
+
+  _storeData = async name => {
+    const favoriteList = [];
+    if (name !== null) {
+      const favorite = {
+        name: name
+      };
+      favoriteList.push(favorite);
+      try {
+        await AsyncStorage.getItem("product_key").then(product => {
+          if (product !== null) {
+            const p = JSON.parse(product);
+            p.push(favorite);
+            AsyncStorage.setItem("product_key", JSON.stringify(p));
+          } else {
+            AsyncStorage.setItem("product_key", JSON.stringify(favoriteList));
+          }
+        });
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  };
+
+  _removeData = async name => {
+    try {
+      let data = await AsyncStorage.getItem("product_key");
+      data = JSON.parse(data);
+      for (let i in data) {
+        let object = data[i];
+        if (object.name == name) {
+          data.splice(i, 1);
+        }
+      }
+      await AsyncStorage.setItem("product_key", JSON.stringify(data));
+      console.log("Just removed", name); //AsyncStorage.clear();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <View>
       <FlatList
@@ -249,13 +314,13 @@ const List = (props, { navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   {
-                    addToFavorite(item.id);
+                    addToFavorite(item.name);
                   }
                 }}
               >
                 <View>
                   <Icon
-                    name={item.purchased ? "heart" : "heart-o"}
+                    name={item.purchased < 1 ? "heart-o" : "heart"}
                     size={40}
                     color="#722f37"
                   />
@@ -269,7 +334,4 @@ const List = (props, { navigation }) => {
   );
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(List);
+export default connect(mapStateToProps, mapDispatchToProps)(List);

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import { Header } from "react-native-elements";
 import BackButton from "./BackButton.js";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -13,7 +13,7 @@ export default class Product extends Component {
           text: navigation.getParam("name", "no-name"),
           style: {
             color: "white",
-            fontSize: 20,
+            fontSize: 20
           }
         }}
         barStyle="light-content"
@@ -51,6 +51,7 @@ export default class Product extends Component {
             uri: this.props.navigation.getParam("img", "no-image")
           }}
         />
+
         <Text
           style={{
             fontSize: 16,
@@ -72,6 +73,7 @@ export default class Product extends Component {
         >
           {this.props.navigation.getParam("type", "no-type")}
         </Text>
+
         <Text
           style={{
             fontSize: 16,
@@ -82,6 +84,7 @@ export default class Product extends Component {
         >
           Fra {this.props.navigation.getParam("origin", "no-origin")}
         </Text>
+
         <Text
           style={{
             fontSize: 16,
@@ -93,6 +96,7 @@ export default class Product extends Component {
           {"Normalpris i Norge er "}
           {this.props.navigation.getParam("price", "no-price")} kr.
         </Text>
+
         <Text
           numberOfLines={3}
           ellipsizeMode="tail"
@@ -105,6 +109,7 @@ export default class Product extends Component {
         >
           {this.props.navigation.getParam("description", "no-description")}
         </Text>
+
         <View style={{ padding: 5, alignSelf: "center", margin: 10 }}>
           <Text
             style={{
@@ -119,6 +124,7 @@ export default class Product extends Component {
               ? "Ikke blant dine favoritter"
               : "Blant dine favoritter"}
           </Text>
+
           <Icon
             style={{ alignSelf: "center" }}
             name={
@@ -135,13 +141,3 @@ export default class Product extends Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    flexDirection: "row"
-    //alignItems: "center",
-    //justifyContent: "center"
-  }
-});

@@ -18,7 +18,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
-    searchString: state.filter.searchString
+    searchString: state.filter.searchString,
+    filter: state.filter.filter
   };
 }
 
@@ -45,7 +46,7 @@ function Search(props) {
     <View>
       <Header
         centerComponent={{
-          text: "Produktliste",
+          text: props.filter,
           style: {
             color: "white",
             fontSize: 20

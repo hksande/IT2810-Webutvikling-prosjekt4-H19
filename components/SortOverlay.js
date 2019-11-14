@@ -55,7 +55,6 @@ function SortOverlay(props) {
             <ListItem
               title={item.frontend}
               onPress={() => {
-                AsyncStorage.clear();
                 setSort(item.frontend);
               }}
               titleStyle={

@@ -20,22 +20,3 @@ export const ProductNav = createAppContainer(
   })
 );
 
-/*
-
-<Header
-            centerComponent={{
-              text: "Chateau du Vin",
-              style: {
-                color: "white",
-                fontSize: 20,
-              }
-            }}
-            barStyle="light-content"
-            containerStyle={{
-              backgroundColor: "#722f37",
-              justifyContent: "space-around",
-              borderBottomColor: "#722f37",
-              borderBottomWidth: 5
-            }}
-          />
-*/

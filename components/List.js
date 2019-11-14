@@ -167,29 +167,38 @@ const List = props => {
   }
 
   async function isFavorite2(name) {
-    AsyncStorage.getItem("product_key").then(result => {
-      let favs = JSON.parse(result);
-      let favStr = favs.toString();
-      console.log("favs", favStr, Array.isArray(favs));
-      if (!Array.isArray(favs) || favs === []) {
-        return false;
-      }
-      isFav = favs.includes(name);
-      return isFav;
-    });
+    try {
+      return await AsyncStorage.getItem("product_key").then(result => {
+        let favs = JSON.parse(result);
+        let favStr = favs.toString();
+        console.log("favs", favStr, Array.isArray(favs));
+        if (!Array.isArray(favs) || favs === []) {
+          return false;
+        }
+        isFav = favs.includes(name);
+        console.log("does it include?", isFav);
+        return isFav;
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async function addToFavorite2(name) {
-    /*AsyncStorage.clear();*/
-    await isFavorite2(name).then(isFav => {
-      if (isFav) {
-        console.log("removing");
-        _removeData2(name);
-      } else {
-        console.log("adding");
-        _storeData2(name);
-      }
-    });
+    try {
+      await isFavorite2(name).then(isFav => {
+        console.log(name, " is fav? ", isFav);
+        if (isFav) {
+          console.log("removing");
+          _removeData2(name);
+        } else {
+          console.log("adding");
+          _storeData2(name);
+        }
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   _storeData2 = async name => {
@@ -223,12 +232,16 @@ const List = props => {
 
   _removeData2 = async name => {
     try {
-      let favorites = await AsyncStorage.getItem("product_key");
-      favorites = JSON.parse(favorites);
-      var filtered = favorites.filter((el, index) => {
-        return el !== name;
-      });
-      await AsyncStorage.setItem("product_key", JSON.stringify(filtered));
+      await AsyncStorage.getItem("product_key")
+        .then(result => JSON.parse(result))
+        .then(favs => {
+          var filtered = favs.filter(el => {
+            return el !== name;
+          });
+          let filtStr = filtered.toString();
+          console.log("new favs: ", filtStr);
+          _setData(filtered);
+        });
     } catch (e) {
       console.log(e);
     }

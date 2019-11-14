@@ -3,6 +3,7 @@ import { Overlay, Text, ListItem } from "react-native-elements";
 import { View, FlatList } from "react-native";
 import { connect } from "react-redux";
 import { setSort, setPage } from "../actions/index";
+import { AsyncStorage } from "react-native";
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -54,6 +55,7 @@ function SortOverlay(props) {
             <ListItem
               title={item.frontend}
               onPress={() => {
+                AsyncStorage.clear();
                 setSort(item.frontend);
               }}
               titleStyle={
@@ -68,7 +70,4 @@ function SortOverlay(props) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SortOverlay);
+export default connect(mapStateToProps, mapDispatchToProps)(SortOverlay);

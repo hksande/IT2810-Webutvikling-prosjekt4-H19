@@ -94,8 +94,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 const List = props => {
-  const [favorites, addToFavorites] = useState([]);
-  const [color, setColor] = useState("heart-o");
+  const [favorites, setFavorites] = useState(props.favs);
+
+  useEffect(() => {
+    setFavorites(props.favs);
+  }, [props.favs]);
 
   // Decide which query and variables to use:
   let filter = props.filter;
@@ -145,9 +148,6 @@ const List = props => {
 
   if (data) {
     products = data[dataName];
-    console.log(products);
-    console.log("Page: ", props.page);
-    console.log("variables: ", variables);
   }
 
   // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
@@ -165,85 +165,79 @@ const List = props => {
       origin: item.origin,
       price: item.price,
       description: item.description,
-      purchased: item.purchased
+      favorite: favorites.includes(item.name)
     });
   }
 
   async function isFavorite(name) {
-    let data = await AsyncStorage.getItem("product_key");
-    let json = JSON.parse(data);
-    for (let object in json) {
-      //console.log(object);
-      if (json[object].name == name) {
-        console.log("hei");
-        return true;
-      }
+    try {
+      return await AsyncStorage.getItem("product_key").then(result => {
+        let favs = JSON.parse(result);
+        if (!Array.isArray(favs) || favs === []) {
+          return false;
+        }
+        isFav = favs.includes(name);
+        return isFav;
+      });
+    } catch (e) {
+      console.log(e);
     }
-    return false;
   }
 
   async function addToFavorite(name) {
-    //console.log("name: " + name);
-    //AsyncStorage.clear();
-    let favorite = await isFavorite(name); //console.log("isFavorite: " + favorite);
-    console.log("Length of all products loaded: ", products.length);
-    for (let i in products) {
-      let element = products[i];
-      if (element.name === name && favorite) {
-        var index = favorites.indexOf(element);
-        element.purchased = 0;
-        favorites.splice(index, 1);
-        addToFavorites(favorites);
-        _removeData(element.name);
-        setColor("heart-o"); //console.log(favorites);
-      } else if (element.name == name) {
-        //console.log(element);
-        element.purchased = 1;
-        favorites.push(element);
-        addToFavorites(favorites);
-        _storeData(element.name);
-        setColor("heart"); //console.log(favorites);
-      }
+    try {
+      await isFavorite(name).then(isFav => {
+        if (isFav) {
+          _removeData(name);
+        } else {
+          _storeData(name);
+        }
+      });
+    } catch (e) {
+      console.log(e);
     }
   }
 
   _storeData = async name => {
-    const favoriteList = [];
     if (name !== null) {
-      const favorite = {
-        name: name
-      };
-      favoriteList.push(favorite);
       try {
-        await AsyncStorage.getItem("product_key").then(product => {
-          if (product !== null) {
-            const p = JSON.parse(product);
-            p.push(favorite);
-            AsyncStorage.setItem("product_key", JSON.stringify(p));
-          } else {
-            AsyncStorage.setItem("product_key", JSON.stringify(favoriteList));
-          }
-        });
+        await AsyncStorage.getItem("product_key")
+          .then(result => JSON.parse(result))
+          .then(favs => {
+            if (!Array.isArray(favs)) {
+              favs = [name];
+            } else {
+              favs.push(name);
+            }
+            _setData(favs);
+          });
       } catch (e) {
         console.log(e);
       }
     }
   };
 
+  _setData = async data => {
+    try {
+      await AsyncStorage.setItem("product_key", JSON.stringify(data));
+      setFavorites(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   _removeData = async name => {
     try {
-      let data = await AsyncStorage.getItem("product_key");
-      data = JSON.parse(data);
-      for (let i in data) {
-        let object = data[i];
-        if (object.name == name) {
-          data.splice(i, 1);
-        }
-      }
-      await AsyncStorage.setItem("product_key", JSON.stringify(data));
-      console.log("Just removed", name); //AsyncStorage.clear();
-    } catch (error) {
-      console.log(error.message);
+      await AsyncStorage.getItem("product_key")
+        .then(result => JSON.parse(result))
+        .then(favs => {
+          var filtered = favs.filter(el => {
+            return el !== name;
+          });
+          _setData(filtered);
+        });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -261,7 +255,6 @@ const List = props => {
         )}
         data={products}
         keyExtractor={product => product.name}
-        extraData={favorites}
         ListHeaderComponent={<SortContainer />}
         ListFooterComponent={
           <View
@@ -285,7 +278,6 @@ const List = props => {
                 padding: 10,
                 justifyContent: "flex-end",
                 borderWidth: 0.5,
-                //borderTopWidth: 0
                 borderBottomWidth: 0
               }}
             >
@@ -320,7 +312,7 @@ const List = props => {
               >
                 <View>
                   <Icon
-                    name={item.purchased < 1 ? "heart-o" : "heart"}
+                    name={favorites.includes(item.name) ? "heart" : "heart-o"}
                     size={40}
                     color="#722f37"
                   />

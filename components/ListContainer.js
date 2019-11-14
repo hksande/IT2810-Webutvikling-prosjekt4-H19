@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { AsyncStorage } from "react-native";
 import List from "./List";
 
-/* Container component for the productslist */
+/* Container component for the productslist*/
 export default ListContainer = props => {
   const [favs, setFavs] = useState([]);
 

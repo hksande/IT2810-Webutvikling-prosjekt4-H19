@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from "react";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
-import HeaderContainer from "./HeaderContainer";
 import {
   View,
   FlatList,
-  Image,
   Text,
-  TouchableOpacity,
   ActivityIndicator,
   AsyncStorage
 } from "react-native";
 import { setPage } from "../actions/index";
+import ListItem from "./ListItem";
+import HeaderContainer from "./HeaderContainer";
 
 function mapStateToProps(state) {
   return {
@@ -99,6 +97,8 @@ const List = props => {
     setFavorites(props.favs);
   }, [props.favs]);
 
+  /* QUERY AND COMMUNICATION WITH BACKEND */
+
   // Decide which query and variables to use:
   let filter = props.filter;
   let query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
@@ -142,6 +142,12 @@ const List = props => {
     });
   }, [props.page]);
 
+  // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
+  function handleLoadMore() {
+    props.setPage(1);
+  }
+
+// What to do when query returns loading, error or data
   if (loading) return <View></View>;
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
@@ -149,21 +155,10 @@ const List = props => {
     products = data[dataName];
   }
 
-  // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
-  function handleLoadMore() {
-    props.setPage(1);
-  }
-
-  // Navigate to productpage
-  function handleListTap(item) {
-    props.navigation.navigate("Product", {
-      ...item,
-      favorite: favorites.includes(item.name)
-    });
-  }
+  /* ASYNC STORAGE */
 
   // Check if item is in favorites in Async Storage
-  async function isFavorite(name) {
+  isFavorite = async name => {
     try {
       return await AsyncStorage.getItem("product_key").then(result => {
         let favs = JSON.parse(result);
@@ -176,9 +171,10 @@ const List = props => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  async function addToFavorite(name) {
+  // Checks if product is favorite and adds/removes it in list
+  addToFavorite = async name => {
     try {
       await isFavorite(name).then(isFav => {
         if (isFav) {
@@ -190,17 +186,21 @@ const List = props => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
+  // Adds product to async storage favorite list
   _storeData = async name => {
     if (name !== null) {
       try {
         await AsyncStorage.getItem("product_key")
           .then(result => JSON.parse(result))
           .then(favs => {
+            // If favorite list doesn't exist yet, make favoritelist
             if (!Array.isArray(favs)) {
               favs = [name];
-            } else {
+            }
+            // If favorite list exists, add new product
+            else {
               favs.push(name);
             }
             _setData(favs);
@@ -211,20 +211,13 @@ const List = props => {
     }
   };
 
-  _setData = async data => {
-    try {
-      await AsyncStorage.setItem("product_key", JSON.stringify(data));
-      setFavorites(data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
+  // Remove products to async storage favorite list
   _removeData = async name => {
     try {
       await AsyncStorage.getItem("product_key")
         .then(result => JSON.parse(result))
         .then(favs => {
+          // Remove product
           var filtered = favs.filter(el => {
             return el !== name;
           });
@@ -234,6 +227,26 @@ const List = props => {
       console.log(e);
     }
   };
+
+  // Updates the async storage
+  _setData = async data => {
+    try {
+      await AsyncStorage.setItem("product_key", JSON.stringify(data));
+      setFavorites(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  /* NAVIGATION */
+
+  // Navigate to productpage when listitem is pressed
+  function handleListTap(item) {
+    props.navigation.navigate("Product", {
+      ...item,
+      favorite: favorites.includes(item.name)
+    });
+  }
 
   return (
     <View>
@@ -255,56 +268,14 @@ const List = props => {
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleListTap(item)}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 10,
-                justifyContent: "space-between",
-                borderWidth: 0.5,
-                borderBottomWidth: 0
-              }}
-            >
-              <Image
-                style={{
-                  width: 150,
-                  height: 150,
-                  resizeMode: "contain",
-                  overflow: "hidden"
-                }}
-                source={{ uri: item.img }}
-              />
-              <Text
-                numberOfLines={1}
-                style={{
-                  flexShrink: 1,
-                  padding: 5,
-                  fontSize: 12,
-                  marginRight: 10,
-                  overflow: "hidden",
-                  writingDirection: "ltr"
-                }}
-              >
-                {item.name}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  {
-                    addToFavorite(item.name);
-                  }
-                }}
-              >
-                <View>
-                  <Icon
-                    name={favorites.includes(item.name) ? "heart" : "heart-o"}
-                    size={40}
-                    color="#722f37"
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
+          <View>
+            <ListItem
+              item={item}
+              handleListTap={handleListTap}
+              addToFavorite={addToFavorite}
+              favorites={favorites}
+            />
+          </View>
         )}
       />
     </View>

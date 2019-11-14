@@ -11,7 +11,7 @@ export default class Product extends Component {
       <Header
         leftComponent={<BackButton />}
         centerComponent={{
-          text: navigation.getParam("name", "no-name"),
+          text:'Detaljer',
           style: {
             color: "white",
             fontSize: 20
@@ -47,11 +47,11 @@ export default class Product extends Component {
               backgroundColor: '#F5F5F5'}}>
         <Text
             style={{
-              fontSize: 18,
+              fontSize: 16,
               padding: 5,
               alignSelf: "center",
               margin: 20,
-              fontWeight: 'bold',
+              //fontWeight: 'bold',
               
             }}
           >
@@ -157,7 +157,7 @@ export default class Product extends Component {
             style={{
               fontSize: 12,
               alignSelf: "center",
-              margin: 10,
+              margin: 20,
               fontStyle: "italic"
             }}
           >

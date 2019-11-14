@@ -2,22 +2,22 @@ import React, { Component } from "react";
 import { View, Text, AsyncStorage } from "react-native";
 import { Header } from "react-native-elements";
 import { FlatList } from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/FontAwesome";
 
+/* Component that displays all favorites */
 export default class Favorites extends Component {
   constructor(props) {
     super(props);
-    this._retrieveData = this._retrieveData.bind(this);
     this.state = {
       favorites: []
     };
+    this._retrieveData = this._retrieveData.bind(this);
   }
 
+  /* Fetch data from Async Storage */
   _retrieveData = async () => {
     try {
-      await AsyncStorage.getItem("product_key").then(name => {
-        console.log(name);
-        products = JSON.parse(name);
+      await AsyncStorage.getItem("product_key").then(favs => {
+        products = JSON.parse(favs);
         this.setState({
           favorites: products
         });
@@ -28,6 +28,7 @@ export default class Favorites extends Component {
   };
 
   componentDidMount() {
+    /* Call _retrieveData on mount */
     const { navigation } = this.props;
     navigation.addListener("willFocus", () => this._retrieveData());
   }
@@ -52,33 +53,30 @@ export default class Favorites extends Component {
           }}
         />
         <FlatList
-          style={{ marginTop: 60, height: 500 }}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{
-                height: 1,
-                width: "100%",
-                borderTopWidth: 0,
-                margin: 20,
-                padding: 10
-              }}
-            />
-          )}
+          style={{ marginBottom: 20 }}
           keyExtractor={(item, index) => index.toString()}
           data={this.state.favorites}
           renderItem={({ item }) => (
-            <View>
-              <Text style={{ alignSelf: "center", fontStyle: "italic" }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                margin: 40,
+                borderWidth: 0.5,
+                borderColor: "gray",
+                borderLeftWidth: 0,
+                borderRightWidth: 0,
+                borderTopWidth: 0
+              }}
+            >
+              <Text
+                style={{
+                  fontStyle: "italic",
+                  fontSize: 17
+                }}
+              >
                 {item}
               </Text>
-
-              <Icon
-                style={{ alignSelf: "center", marginTop: 1 }}
-                name={"heart"}
-                size={15}
-                color="#722f37"
-                opacity="0.5"
-              />
             </View>
           )}
         />

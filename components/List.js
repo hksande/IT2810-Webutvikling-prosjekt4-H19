@@ -3,7 +3,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
-import SortContainer from "./SortContainer";
+import HeaderContainer from "./HeaderContainer";
 import {
   View,
   FlatList,
@@ -13,12 +13,26 @@ import {
   ActivityIndicator,
   AsyncStorage
 } from "react-native";
-import { Header } from "react-native-elements";
 import { setPage } from "../actions/index";
 
-const PRODUCTS_PER_PAGE = 10;
+function mapStateToProps(state) {
+  return {
+    sort: state.filter.sort,
+    searchString: state.filter.searchString,
+    filter: state.filter.filter,
+    page: state.pagination.page
+  };
+}
 
-// TODO; implement pagination from reducer
+function mapDispatchToProps(dispatch) {
+  return {
+    setPage: change => {
+      dispatch(setPage({ change }));
+    }
+  };
+}
+
+const PRODUCTS_PER_PAGE = 10;
 
 // Query to fetch all products:
 
@@ -76,26 +90,11 @@ const GET_PRODUCTS_BY_TYPE = gql`
   }
 `;
 
-function mapStateToProps(state) {
-  return {
-    sort: state.filter.sort,
-    searchString: state.filter.searchString,
-    filter: state.filter.filter,
-    page: state.pagination.page
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    setPage: change => {
-      dispatch(setPage({ change }));
-    }
-  };
-}
-
 const List = props => {
+  // Local state with favorites. Used to display correct heart-logo
   const [favorites, setFavorites] = useState(props.favs);
 
+  // Update favorites to match async storage on mount
   useEffect(() => {
     setFavorites(props.favs);
   }, [props.favs]);
@@ -155,20 +154,15 @@ const List = props => {
     props.setPage(1);
   }
 
+  // Navigate to productpage
   function handleListTap(item) {
-    console.log(item.name);
     props.navigation.navigate("Product", {
-      id: item.id,
-      name: item.name,
-      img: item.img,
-      type: item.type,
-      origin: item.origin,
-      price: item.price,
-      description: item.description,
+      ...item,
       favorite: favorites.includes(item.name)
     });
   }
 
+  // Check if item is in favorites in Async Storage
   async function isFavorite(name) {
     try {
       return await AsyncStorage.getItem("product_key").then(result => {
@@ -244,18 +238,9 @@ const List = props => {
   return (
     <View>
       <FlatList
-        ItemSeparatorComponent={() => (
-          <View
-            style={{
-              height: 1,
-              width: "100%",
-              borderTopWidth: 0
-            }}
-          />
-        )}
         data={products}
         keyExtractor={product => product.name}
-        ListHeaderComponent={<SortContainer />}
+        ListHeaderComponent={<HeaderContainer />}
         ListFooterComponent={
           <View
             style={{
@@ -276,11 +261,20 @@ const List = props => {
                 flexDirection: "row",
                 alignItems: "center",
                 padding: 10,
-                justifyContent: "flex-end",
+                justifyContent: "space-between",
                 borderWidth: 0.5,
                 borderBottomWidth: 0
               }}
             >
+              <Image
+                style={{
+                  width: 150,
+                  height: 150,
+                  resizeMode: "contain",
+                  overflow: "hidden"
+                }}
+                source={{ uri: item.img }}
+              />
               <Text
                 numberOfLines={1}
                 style={{
@@ -294,15 +288,6 @@ const List = props => {
               >
                 {item.name}
               </Text>
-              <Image
-                style={{
-                  width: 150,
-                  height: 150,
-                  resizeMode: "contain",
-                  overflow: "hidden"
-                }}
-                source={{ uri: item.img }}
-              />
               <TouchableOpacity
                 onPress={() => {
                   {

@@ -19,7 +19,7 @@ export default class Product extends Component {
           </TouchableOpacity>
         }
         centerComponent={{
-          text:'Detaljer',
+          text: "Detaljer",
           style: {
             color: "white",
             fontSize: 20
@@ -49,23 +49,25 @@ export default class Product extends Component {
         }}
       >
         <ScrollView>
-          <View style = {{borderBottomWidth: 1,
-              borderBottomColor: '#CCCCCC',
-              marginBottom: 10,
-              backgroundColor: '#F5F5F5'}}>
-        <Text
+          <View
             style={{
-              fontSize: 16,
-              padding: 5,
-              alignSelf: "center",
-              margin: 20,
-              //fontWeight: 'bold',
-              
+              borderBottomWidth: 1,
+              borderBottomColor: "#CCCCCC",
+              marginBottom: 10,
+              backgroundColor: "#F5F5F5"
             }}
           >
-            
-            {this.props.navigation.getParam("name", "no-name")}
-          </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                padding: 5,
+                alignSelf: "center",
+                margin: 20
+                //fontWeight: 'bold',
+              }}
+            >
+              {this.props.navigation.getParam("name", "no-name")}
+            </Text>
           </View>
           <Image
             style={{
@@ -80,84 +82,86 @@ export default class Product extends Component {
             }}
           />
 
-          <View style = {{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          borderBottomColor: '#CCCCCC',
-          borderBottomWidth: 1,
-          backgroundColor: '#F5F5F5'
-          }}
-          >
-          <Text
+          <View
             style={{
-              fontSize: 16,
-              padding: 5,
-              alignSelf: "center",
-              margin: 10
+              flexDirection: "row",
+              justifyContent: "space-around",
+              alignItems: "center",
+              borderBottomColor: "#CCCCCC",
+              borderBottomWidth: 1,
+              backgroundColor: "#F5F5F5"
             }}
           >
-            Pris
-          </Text>
-          <Text
-            style={{
-              fontSize: 16,
-              padding: 5,
-              alignSelf: "center",
-              margin: 10
-            }}
-          >
-            Område
-          </Text>
-          <Text
-            style={{
-              fontSize: 16,
-              padding: 5,
-              alignSelf: "center",
-              margin: 10,
-            }}
-          >
-            Type
-          </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                padding: 5,
+                alignSelf: "center",
+                margin: 10
+              }}
+            >
+              Pris
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                padding: 5,
+                alignSelf: "center",
+                margin: 10
+              }}
+            >
+              Område
+            </Text>
+            <Text
+              style={{
+                fontSize: 16,
+                padding: 5,
+                alignSelf: "center",
+                margin: 10
+              }}
+            >
+              Type
+            </Text>
           </View>
 
-          <View style = {{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center'
-          
-          }}>
-          <Text
+          <View
             style={{
-              fontSize: 12,
-              padding: 5,
-              alignSelf: "center",
-              margin: 10
+              flexDirection: "row",
+              justifyContent: "space-around",
+              alignItems: "center"
             }}
           >
-            {this.props.navigation.getParam("price", "no-price")} kr
-          </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                padding: 5,
+                alignSelf: "center",
+                margin: 10
+              }}
+            >
+              {this.props.navigation.getParam("price", "no-price")} kr
+            </Text>
 
-          <Text
-            style={{
-              fontSize: 12,
-              padding: 5,
-              alignSelf: "center",
-              margin: 10
-            }}
-          >
-            {this.props.navigation.getParam("origin", "no-origin")}
-          </Text>
-          <Text
-            style={{
-              fontSize: 12,
-              padding: 5,
-              alignSelf: "center",
-              margin: 10,
-            }}
-          >
-            {this.props.navigation.getParam("type", "no-type")}
-          </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                padding: 5,
+                alignSelf: "center",
+                margin: 10
+              }}
+            >
+              {this.props.navigation.getParam("origin", "no-origin")}
+            </Text>
+            <Text
+              style={{
+                fontSize: 12,
+                padding: 5,
+                alignSelf: "center",
+                margin: 10
+              }}
+            >
+              {this.props.navigation.getParam("type", "no-type")}
+            </Text>
           </View>
           <Text
             numberOfLines={3}
@@ -187,17 +191,20 @@ export default class Product extends Component {
                 : "Ikke blant dine favoritter"}
             </Text>
 
-            <FontIcon
-              style={{ alignSelf: "center" }}
-              name={
-                this.props.navigation.getParam("favorite") ? "heart" : "heart-o"
-              }
-              size={10}
-              color="#722f37"
-              opacity="0.5"
-            />}
+            {
+              <FontIcon
+                style={{ alignSelf: "center" }}
+                name={
+                  this.props.navigation.getParam("favorite")
+                    ? "heart"
+                    : "heart-o"
+                }
+                size={10}
+                color="#722f37"
+                opacity="0.5"
+              />
+            }
           </View>
-      
         </ScrollView>
       </View>
     );

@@ -1,14 +1,23 @@
 import React, { Component } from "react";
-import { StyleSheet, Text, View, Image, ScrollView } from "react-native";
+import { Text, View, Image, ScrollView } from "react-native";
 import { Header } from "react-native-elements";
-import BackButton from "./BackButton.js";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { TouchableOpacity } from "react-native";
+import AntIcon from "react-native-vector-icons/AntDesign";
+import FontIcon from "react-native-vector-icons/FontAwesome";
 
 export default class Product extends Component {
   static navigationOptions = ({ navigation }) => ({
     header: (
       <Header
-        leftComponent={<BackButton />}
+        leftComponent={
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Products");
+            }}
+          >
+            <AntIcon name={"menu-unfold"} size={20} color="white" />
+          </TouchableOpacity>
+        }
         centerComponent={{
           text: navigation.getParam("name", "no-name"),
           style: {
@@ -126,7 +135,7 @@ export default class Product extends Component {
                 : "Ikke blant dine favoritter"}
             </Text>
 
-            <Icon
+            <FontIcon
               style={{ alignSelf: "center" }}
               name={
                 this.props.navigation.getParam("favorite") ? "heart" : "heart-o"

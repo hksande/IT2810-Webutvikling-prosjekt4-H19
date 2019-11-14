@@ -94,6 +94,12 @@ function mapDispatchToProps(dispatch) {
 }
 
 const List = props => {
+  const [favorites, setFavorites] = useState(props.favs);
+
+  useEffect(() => {
+    setFavorites(props.favs);
+  }, [props.favs]);
+
   // Decide which query and variables to use:
   let filter = props.filter;
   let query = filter === null ? ALL_PRODUCTS : GET_PRODUCTS_BY_TYPE;
@@ -142,9 +148,6 @@ const List = props => {
 
   if (data) {
     products = data[dataName];
-    /*console.log(products);*/
-    console.log("Page: ", props.page);
-    console.log("variables: ", variables);
   }
 
   // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
@@ -162,21 +165,18 @@ const List = props => {
       origin: item.origin,
       price: item.price,
       description: item.description,
-      purchased: item.purchased
+      favorite: favorites.includes(item.name)
     });
   }
 
-  async function isFavorite2(name) {
+  async function isFavorite(name) {
     try {
       return await AsyncStorage.getItem("product_key").then(result => {
         let favs = JSON.parse(result);
-        let favStr = favs.toString();
-        console.log("favs", favStr, Array.isArray(favs));
         if (!Array.isArray(favs) || favs === []) {
           return false;
         }
         isFav = favs.includes(name);
-        console.log("does it include?", isFav);
         return isFav;
       });
     } catch (e) {
@@ -184,16 +184,13 @@ const List = props => {
     }
   }
 
-  async function addToFavorite2(name) {
+  async function addToFavorite(name) {
     try {
-      await isFavorite2(name).then(isFav => {
-        console.log(name, " is fav? ", isFav);
+      await isFavorite(name).then(isFav => {
         if (isFav) {
-          console.log("removing");
-          _removeData2(name);
+          _removeData(name);
         } else {
-          console.log("adding");
-          _storeData2(name);
+          _storeData(name);
         }
       });
     } catch (e) {
@@ -201,7 +198,7 @@ const List = props => {
     }
   }
 
-  _storeData2 = async name => {
+  _storeData = async name => {
     if (name !== null) {
       try {
         await AsyncStorage.getItem("product_key")
@@ -212,8 +209,6 @@ const List = props => {
             } else {
               favs.push(name);
             }
-            favstr = favs.toString();
-            console.log("new favs: ", favstr);
             _setData(favs);
           });
       } catch (e) {
@@ -225,12 +220,13 @@ const List = props => {
   _setData = async data => {
     try {
       await AsyncStorage.setItem("product_key", JSON.stringify(data));
+      setFavorites(data);
     } catch (e) {
       console.log(e);
     }
   };
 
-  _removeData2 = async name => {
+  _removeData = async name => {
     try {
       await AsyncStorage.getItem("product_key")
         .then(result => JSON.parse(result))
@@ -238,8 +234,6 @@ const List = props => {
           var filtered = favs.filter(el => {
             return el !== name;
           });
-          let filtStr = filtered.toString();
-          console.log("new favs: ", filtStr);
           _setData(filtered);
         });
     } catch (e) {
@@ -284,7 +278,6 @@ const List = props => {
                 padding: 10,
                 justifyContent: "flex-end",
                 borderWidth: 0.5,
-                //borderTopWidth: 0
                 borderBottomWidth: 0
               }}
             >
@@ -313,13 +306,13 @@ const List = props => {
               <TouchableOpacity
                 onPress={() => {
                   {
-                    addToFavorite2(item.name);
+                    addToFavorite(item.name);
                   }
                 }}
               >
                 <View>
                   <Icon
-                    name={isFavorite2(item.name) ? "heart-o" : "heart"}
+                    name={favorites.includes(item.name) ? "heart" : "heart-o"}
                     size={40}
                     color="#722f37"
                   />

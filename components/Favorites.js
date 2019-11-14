@@ -16,22 +16,10 @@ export default class Favorites extends Component {
   _retrieveData = async () => {
     try {
       await AsyncStorage.getItem("product_key").then(name => {
+        console.log(name);
         products = JSON.parse(name);
-        products.forEach(product => {
-          if (!this.state.favorites.includes(product.name)) {
-            this.setState({
-              favorites: [...this.state.favorites, product.name]
-            }),
-              console.log("New favorites: ", this.state.favorites);
-          } else if (this.state.favorites.includes(product.name)) {
-            let data = this.state.favorites;
-            let index = data.indexOf(product.name);
-            let newFavorites = data.splice(index, 1);
-            console.log("Modified favorites: ", newFavorites);
-            this.setState({
-              favorites: newFavorites
-            });
-          }
+        this.setState({
+          favorites: products
         });
       });
     } catch (e) {
@@ -42,14 +30,8 @@ export default class Favorites extends Component {
   componentDidMount() {
     const { navigation } = this.props;
     navigation.addListener("willFocus", () => this._retrieveData());
-  } /*
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.favorites !== this.state.favorites) {
-      this._retrieveData();
-    }
   }
-*/
+
   render() {
     return (
       <View>

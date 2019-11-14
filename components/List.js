@@ -89,6 +89,8 @@ const GET_PRODUCTS_BY_TYPE = gql`
 `;
 
 const List = props => {
+  const [isLoading, setLoading] = useState(true);
+
   // Local state with favorites. Used to display correct heart-logo
   const [favorites, setFavorites] = useState(props.favs);
 
@@ -131,12 +133,14 @@ const List = props => {
         skip: PRODUCTS_PER_PAGE * props.page
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
+        if (fetchMoreResult[dataName].length == 0) {
+          setLoading(false);
           return prev;
         }
         result = {
           [dataName]: prev[dataName].concat(fetchMoreResult[dataName])
         };
+        setLoading(true);
         return result;
       }
     });
@@ -147,7 +151,7 @@ const List = props => {
     props.setPage(1);
   }
 
-// What to do when query returns loading, error or data
+  // What to do when query returns loading, error or data
   if (loading) return <View></View>;
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
@@ -262,7 +266,7 @@ const List = props => {
               padding: 20
             }}
           >
-            <ActivityIndicator />
+            {isLoading && <ActivityIndicator />}
           </View>
         }
         onEndReachedThreshold={0.5}

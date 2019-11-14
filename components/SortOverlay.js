@@ -64,7 +64,7 @@ function SortOverlay(props) {
               }
             />
           )}
-          keyExtractor={index => index.toString()}
+          keyExtractor={item => item.frontend}
         />
       </View>
     </Overlay>

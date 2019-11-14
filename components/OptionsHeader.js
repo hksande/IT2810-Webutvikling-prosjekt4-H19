@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { View } from "react-native";
 import { SearchBar, Button } from "react-native-elements";
-import Octicon from "react-native-vector-icons/Octicons";
-import Feathericon from "react-native-vector-icons/Feather";
-import { setSearch, setPage } from "./../actions/index";
+import { setSearch, setPage } from "../actions/index";
 import { connect } from "react-redux";
 import { Header } from "react-native-elements";
 
@@ -23,17 +21,22 @@ function mapStateToProps(state) {
   };
 }
 
-function Search(props) {
+/* Component with searchbar, filter- and sortbutton */
+
+function OptionsHeader(props) {
   const [searchValue, setSearchValue] = useState(props.searchString);
 
+  /* Update internal searchstring */
   function handleSearchChange(newSearch) {
     setSearchValue(newSearch);
   }
 
+  /* Call on actual searchfunction */
   function handleSearch() {
     props.setSearch(searchValue);
   }
 
+  /* Open overlays for sort and filter */
   setSortOpen = () => {
     props.setSortOpen(true);
   };
@@ -46,10 +49,10 @@ function Search(props) {
     <View>
       <Header
         centerComponent={{
-          text: props.filter,
+          text: props.filter === null ? "Alle produkter" : props.filter,
           style: {
             color: "white",
-            fontSize: 20
+            fontSize: 30
           }
         }}
         barStyle="light-content"
@@ -91,23 +94,16 @@ function Search(props) {
           onPress={setFilterOpen}
           title="Filtrér"
           titleStyle={{ marginLeft: 15 }}
-          icon={<Feathericon name="filter" size={30} color="white" />}
-          iconLeft
         />
         <Button
           buttonStyle={{ backgroundColor: "#722f37", borderRadius: 0 }}
           onPress={setSortOpen}
           title="Sortér"
           titleStyle={{ marginRight: 15 }}
-          icon={<Octicon name="settings" size={30} color="white" />}
-          iconRight
         />
       </View>
     </View>
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Search);
+export default connect(mapStateToProps, mapDispatchToProps)(OptionsHeader);

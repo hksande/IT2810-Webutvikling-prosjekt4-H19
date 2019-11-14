@@ -1,24 +1,36 @@
 import React, { useState, useEffect } from "react";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { connect } from "react-redux";
 import gql from "graphql-tag";
 import { useQuery } from "@apollo/react-hooks";
-import SortContainer from "./SortContainer";
 import {
   View,
   FlatList,
-  Image,
   Text,
-  TouchableOpacity,
   ActivityIndicator,
   AsyncStorage
 } from "react-native";
-import { Header } from "react-native-elements";
 import { setPage } from "../actions/index";
+import ListItem from "./ListItem";
+import HeaderContainer from "./HeaderContainer";
+
+function mapStateToProps(state) {
+  return {
+    sort: state.filter.sort,
+    searchString: state.filter.searchString,
+    filter: state.filter.filter,
+    page: state.pagination.page
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setPage: change => {
+      dispatch(setPage({ change }));
+    }
+  };
+}
 
 const PRODUCTS_PER_PAGE = 10;
-
-// TODO; implement pagination from reducer
 
 // Query to fetch all products:
 
@@ -76,29 +88,18 @@ const GET_PRODUCTS_BY_TYPE = gql`
   }
 `;
 
-function mapStateToProps(state) {
-  return {
-    sort: state.filter.sort,
-    searchString: state.filter.searchString,
-    filter: state.filter.filter,
-    page: state.pagination.page
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    setPage: change => {
-      dispatch(setPage({ change }));
-    }
-  };
-}
-
 const List = props => {
+  const [isLoading, setLoading] = useState(true);
+
+  // Local state with favorites. Used to display correct heart-logo
   const [favorites, setFavorites] = useState(props.favs);
 
+  // Update favorites to match async storage on mount
   useEffect(() => {
     setFavorites(props.favs);
   }, [props.favs]);
+
+  /* QUERY AND COMMUNICATION WITH BACKEND */
 
   // Decide which query and variables to use:
   let filter = props.filter;
@@ -132,17 +133,25 @@ const List = props => {
         skip: PRODUCTS_PER_PAGE * props.page
       },
       updateQuery: (prev, { fetchMoreResult }) => {
-        if (!fetchMoreResult) {
+        if (fetchMoreResult[dataName].length == 0) {
+          setLoading(false);
           return prev;
         }
         result = {
           [dataName]: prev[dataName].concat(fetchMoreResult[dataName])
         };
+        setLoading(true);
         return result;
       }
     });
   }, [props.page]);
 
+  // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
+  function handleLoadMore() {
+    props.setPage(1);
+  }
+
+  // What to do when query returns loading, error or data
   if (loading) return <View></View>;
   if (error) return <Text>{error} Det har skjedd en feil :(</Text>;
 
@@ -150,26 +159,10 @@ const List = props => {
     products = data[dataName];
   }
 
-  // Increase "page" counter in redux. Used in the useEffect above to calculate which products to fetch:
-  function handleLoadMore() {
-    props.setPage(1);
-  }
+  /* ASYNC STORAGE */
 
-  function handleListTap(item) {
-    console.log(item.name);
-    props.navigation.navigate("Product", {
-      id: item.id,
-      name: item.name,
-      img: item.img,
-      type: item.type,
-      origin: item.origin,
-      price: item.price,
-      description: item.description,
-      favorite: favorites.includes(item.name)
-    });
-  }
-
-  async function isFavorite(name) {
+  // Check if item is in favorites in Async Storage
+  isFavorite = async name => {
     try {
       return await AsyncStorage.getItem("product_key").then(result => {
         let favs = JSON.parse(result);
@@ -182,9 +175,10 @@ const List = props => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
-  async function addToFavorite(name) {
+  // Checks if product is favorite and adds/removes it in list
+  addToFavorite = async name => {
     try {
       await isFavorite(name).then(isFav => {
         if (isFav) {
@@ -196,17 +190,21 @@ const List = props => {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
+  // Adds product to async storage favorite list
   _storeData = async name => {
     if (name !== null) {
       try {
         await AsyncStorage.getItem("product_key")
           .then(result => JSON.parse(result))
           .then(favs => {
+            // If favorite list doesn't exist yet, make favoritelist
             if (!Array.isArray(favs)) {
               favs = [name];
-            } else {
+            }
+            // If favorite list exists, add new product
+            else {
               favs.push(name);
             }
             _setData(favs);
@@ -217,20 +215,13 @@ const List = props => {
     }
   };
 
-  _setData = async data => {
-    try {
-      await AsyncStorage.setItem("product_key", JSON.stringify(data));
-      setFavorites(data);
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
+  // Remove products to async storage favorite list
   _removeData = async name => {
     try {
       await AsyncStorage.getItem("product_key")
         .then(result => JSON.parse(result))
         .then(favs => {
+          // Remove product
           var filtered = favs.filter(el => {
             return el !== name;
           });
@@ -241,21 +232,32 @@ const List = props => {
     }
   };
 
+  // Updates the async storage
+  _setData = async data => {
+    try {
+      await AsyncStorage.setItem("product_key", JSON.stringify(data));
+      setFavorites(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  /* NAVIGATION */
+
+  // Navigate to productpage when listitem is pressed
+  function handleListTap(item) {
+    props.navigation.navigate("Product", {
+      ...item,
+      favorite: favorites.includes(item.name)
+    });
+  }
+
   return (
     <View>
       <FlatList
-        ItemSeparatorComponent={() => (
-          <View
-            style={{
-              height: 1,
-              width: "100%",
-              borderTopWidth: 0
-            }}
-          />
-        )}
         data={products}
         keyExtractor={product => product.name}
-        ListHeaderComponent={<SortContainer />}
+        ListHeaderComponent={<HeaderContainer />}
         ListFooterComponent={
           <View
             style={{
@@ -264,62 +266,20 @@ const List = props => {
               padding: 20
             }}
           >
-            <ActivityIndicator />
+            {isLoading && <ActivityIndicator />}
           </View>
         }
         onEndReachedThreshold={0.5}
         onEndReached={handleLoadMore}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleListTap(item)}>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                padding: 10,
-                justifyContent: "flex-end",
-                borderWidth: 0.5,
-                borderBottomWidth: 0
-              }}
-            >
-              <Text
-                numberOfLines={1}
-                style={{
-                  flexShrink: 1,
-                  padding: 5,
-                  fontSize: 12,
-                  marginRight: 10,
-                  overflow: "hidden",
-                  writingDirection: "ltr"
-                }}
-              >
-                {item.name}
-              </Text>
-              <Image
-                style={{
-                  width: 150,
-                  height: 150,
-                  resizeMode: "contain",
-                  overflow: "hidden"
-                }}
-                source={{ uri: item.img }}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  {
-                    addToFavorite(item.name);
-                  }
-                }}
-              >
-                <View>
-                  <Icon
-                    name={favorites.includes(item.name) ? "heart" : "heart-o"}
-                    size={40}
-                    color="#722f37"
-                  />
-                </View>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
+          <View>
+            <ListItem
+              item={item}
+              handleListTap={handleListTap}
+              addToFavorite={addToFavorite}
+              favorites={favorites}
+            />
+          </View>
         )}
       />
     </View>

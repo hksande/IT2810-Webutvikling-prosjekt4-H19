@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import { AsyncStorage } from "react-native";
 import List from "./List";
 
+/* Container component for the productslist*/
 export default ListContainer = props => {
   const [favs, setFavs] = useState([]);
 
+  /* Fetches favorites from Async storage on mount */
   useEffect(() => {
     const fetchData = async () => {
       let favs = await AsyncStorage.getItem("product_key");
@@ -16,8 +18,6 @@ export default ListContainer = props => {
     fetchData();
   }, []);
 
-  const favStr = favs.toString();
-  console.log("Startfavs: ", favStr);
-
+  /* Passes favorites from Async storage down to productslist */
   return <List favs={favs} {...props} />;
 };

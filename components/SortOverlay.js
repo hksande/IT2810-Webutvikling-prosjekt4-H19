@@ -3,7 +3,6 @@ import { Overlay, Text, ListItem } from "react-native-elements";
 import { View, FlatList } from "react-native";
 import { connect } from "react-redux";
 import { setSort, setPage } from "../actions/index";
-import { AsyncStorage } from "react-native";
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -20,7 +19,8 @@ function mapStateToProps(state) {
   };
 }
 
-const sortList = [
+/* List of sorting options (frontend) and corresponding query-parameter (backend) */
+const SORT = [
   { frontend: "Siste nytt", backend: null },
   { frontend: "Pris stigende", backend: "price_ASC" },
   { frontend: "Pris synkende", backend: "price_DESC" },
@@ -28,10 +28,12 @@ const sortList = [
   { frontend: "Reversert alfabetisk", backend: "name_DESC" }
 ];
 
+/* Overlay with sorting options */
 function SortOverlay(props) {
+  /* When a sorting is pressed */
   const setSort = frontend => {
     props.setSort(
-      sortList.find(el => {
+      SORT.find(el => {
         return el.frontend === frontend;
       }).backend
     );
@@ -50,7 +52,7 @@ function SortOverlay(props) {
         <Text style={{ fontSize: 25, margin: 15 }}>Sortér på:</Text>
         <FlatList
           style={{ marginLeft: 25 }}
-          data={sortList}
+          data={SORT}
           renderItem={({ item }) => (
             <ListItem
               title={item.frontend}
@@ -62,7 +64,7 @@ function SortOverlay(props) {
               }
             />
           )}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={item => item.frontend}
         />
       </View>
     </Overlay>

@@ -9,16 +9,6 @@ import {
   Dimensions
 } from "react-native";
 import { setFilter, setPage } from "../actions/index";
-import { Grid } from "native-base";
-
-const TYPE = [
-  { filter: "Alle", image: require("./../assets/Alle.jpg") },
-  { filter: "Rødvin", image: require("./../assets/Rødvin.jpg") },
-  { filter: "Hvitvin", image: require("./../assets/Hvitvin.jpg") },
-  { filter: "Musserende", image: require("./../assets/Musserende.jpg") },
-  { filter: "Øl", image: require("./../assets/Øl.jpg") },
-  { filter: "Sprit", image: require("./../assets/Sprit.jpg") }
-];
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -36,9 +26,21 @@ function mapStateToProps(state) {
   };
 }
 
-function Filtering(props) {
+/* List of filtercategories: */
+const TYPE = [
+  { filter: "Alle", image: require("./../assets/Alle.jpg") },
+  { filter: "Rødvin", image: require("./../assets/Rødvin.jpg") },
+  { filter: "Hvitvin", image: require("./../assets/Hvitvin.jpg") },
+  { filter: "Musserende", image: require("./../assets/Musserende.jpg") },
+  { filter: "Øl", image: require("./../assets/Øl.jpg") },
+  { filter: "Sprit", image: require("./../assets/Sprit.jpg") }
+];
+
+/* Overlay with filter choices  */
+function FilterOverlay(props) {
+
+  /* When filter is pressed */
   handleTypePress = type => {
-    console.log(type);
     filter = type;
     props.setFilter(filter);
     props.setOpen(false);
@@ -91,7 +93,4 @@ function Filtering(props) {
   );
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Filtering);
+export default connect(mapStateToProps, mapDispatchToProps)(FilterOverlay);

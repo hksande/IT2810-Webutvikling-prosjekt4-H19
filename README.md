@@ -2,7 +2,7 @@
 
 > Gruppe 24 | Prosjekt 4 | IT2810 Webutvikling 2019
 
-![Demo](./assets/readme/readmeIMG.png)
+<img src="./assets/readme/readmeIMG.png" height="300">
 
 ###### Introduksjon
 

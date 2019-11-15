@@ -4,7 +4,8 @@ import { createAppContainer } from "react-navigation";
 import List from "./List.js";
 import ListContainer from "./ListContainer";
 import Product from "./Product.js";
-import { Header } from "react-native-elements";
+
+/* This is the component enabling inspection of a product to the detailed page. */
 
 export const ProductNav = createAppContainer(
   createStackNavigator({
@@ -19,4 +20,3 @@ export const ProductNav = createAppContainer(
     }
   })
 );
-

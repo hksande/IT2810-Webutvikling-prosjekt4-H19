@@ -18,6 +18,8 @@ const theme = {
   }
 };
 
+/* ApolloClient let's us communicate with our server, which in turn has access to the database */
+
 const client = new ApolloClient({
   uri: "http://it2810-24.idi.ntnu.no:5000/graphql",
   onError: ({ networkError, graphQLErrors }) => {
@@ -25,6 +27,8 @@ const client = new ApolloClient({
     console.log("networkError", networkError);
   }
 });
+
+// Checkout TabNav for further explanation.
 
 export default function App() {
   return (
@@ -44,7 +48,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff"
-    //alignItems: "center",
-    //justifyContent: "center"
   }
 });

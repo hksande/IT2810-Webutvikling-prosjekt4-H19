@@ -4,9 +4,10 @@
 
 <img src="./assets/readme/readmeIMG.png" height="300">
 
+_Av Johanne Lie, Mathilde Tillman Hegdal og Hans Kristian Sande_
+
 ### Introduksjon
 
-_Av Johanne Lie, Mathilde Tillman Hegdal og Hans Kristian Sande_
 Denne appen har blitt laget i React Native med expo client.
 Gruppen har valgt å ta i bruk implementasjonen av backend fra prosjekt 3 i prosjekt 4. Dermed baserer temaet i applikasjonen seg på et lignende vinmonopol og logikken er derfor mye av den samme. Spesielt interesserte henvises til readme fra prosjekt 3 dersom de vil lese mer om hvordan klient-siden er koblet sammen med server-siden (Se Apollo).
 
@@ -31,18 +32,18 @@ Et problem på veien var samhandlingen mellom favorittknappen og AsyncStorage. D
 Gruppen har som sagt utviklet produktet i React Native med flere forskjellige komponenter, hvorpå hovedkomponenten er _App.js_. Expo har blitt brukt til å teste applikasjonen underveis. Ettersom gruppen har både android- og ios-telefoner kunne vi jevnlig følge med på utviklingen og se til at det ble riktig begge steder. Expo hadde i tillegg mulighet til å kjøre simulator på flere utgaver av telefoner, hvilket også var til stor hjelp når vi testet for om designet var responsivt og applikasjonen kompatibel.
 
 **Tredjepartskomponenter**\
-
 Tredjepartskomponentene gruppen har benyttet seg av har måttet passere to krav:
 
 1. Enkle og tilpasningsdyktige i bruk.
 2. Se bra ut.
-   (Vi har valgt komponenter fra mange ulike biblioteker, men generelt brukt [Googles retningslinjer](https://material.io/design/iconography/product-icons.html#) for å hva vurdere hva som er god design)
-   Noen steder vi har hentet tredjepartskomponenter fra: «react-native-elements», «react-native-vector-icons», «react-navigation», «react-navigation-material-bottom-tabs», «react-native».
+
+(Vi har valgt komponenter fra mange ulike biblioteker, men generelt brukt [Googles retningslinjer](https://material.io/design/iconography/product-icons.html#) for å vurdere hva som er god design)
+Noen pakker vi har hentet tredjepartskomponenter fra: «react-native-elements», «react-native-vector-icons», «react-navigation», «react-navigation-material-bottom-tabs», «react-native».
 
 ## Testing
 
 Det brukes expo til å starte og teste appen vår. Man kjører prosjektet ved å skrive «expo start» i consolen. Du blir presentert en side hvor du enten kjører simulator for android, eller ios, eller på din egen mobil ved QR-scan. Hvis du skal kjøre den på din egen mobil må du ha en app for dette som heter Expo. Bare bruk kamera på mobilen og scan QR-koden. Deretter skal appen kjøre.
-Vi har testet prosjektet med både Android telefon og Iphone. Vi har også testet e2e manuelt. Vi har blant annet testet søkefunksjonen, filtrering og sortering. Vi har e2e testet både på Iphone og Android.\
+Vi har testet prosjektet med både Android telefon og Iphone. Vi har også testet e2e manuelt. Vi har blant annet testet søkefunksjonen, filtrering og sortering. Vi har e2e testet både på Iphone og Android.
 
 | Test                                 | Status |
 | ------------------------------------ | ------ |
